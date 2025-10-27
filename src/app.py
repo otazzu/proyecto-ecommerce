@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
 from api.database.db import db
+from api.models import *
 from flask_cors import CORS
 from api.admin import setup_admin
 from api.commands import setup_commands
@@ -22,6 +23,10 @@ app = Flask(__name__)
 CORS(app)
 app.url_map.strict_slashes = False
 
+app.config["JWT_SECRET_KEY"] = os.environ.get(
+    'JWT_SECRET_KEY', 'super-secret-key')
+jwt = JWTManager(app)
+
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -31,11 +36,6 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-app.config["JWT_SECRET_KEY"] = os.environ.get(
-    'JWT_SECRET_KEY', 'super-secret-key')
-jwt = JWTManager(app)
-
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 
