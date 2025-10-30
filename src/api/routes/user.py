@@ -3,6 +3,7 @@ import bcrypt
 from flask import Blueprint, jsonify, request
 import re
 from api.database.db import db
+from api.models import Rol
 from api.models.User import User
 
 api = Blueprint('api/user', __name__)
@@ -24,6 +25,12 @@ def validate_password(password):
         return False
     return True
 
+def get_rol_id_by_type(rol_type):
+    rol = Rol.query.filter_by(type=rol_type).first()
+    if rol:
+        return rol.id
+    return None
+
 @api.route ('/users', methods= ['GET'])
 def get_users():
     all_users = User.query.all()
@@ -31,11 +38,12 @@ def get_users():
     return jsonify(all_user_serialize), 200
 
 
-@api.route('/signup', methods=['POST'])
-def signup():
+@api.route('/signup/<rol_type>', methods=['POST'])
+def signup(rol_type):
     try:
         body = request.get_json()
-        required_fields = ['email', 'password']
+        required_fields = ['email', 'password',
+                           'user_name', 'first_name', 'last_name']
 
         for field in required_fields:
             if field not in body or not body[field]:
@@ -47,6 +55,11 @@ def signup():
         if not validate_password(body['password']):
             return jsonify({'error': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número'}), 400
 
+        rol_id = get_rol_id_by_type(rol_type)
+        print(rol_id, rol_type)
+        if rol_id is None:
+            return jsonify({'error': 'El tipo de rol debe ser "client" o "seller"'}), 400
+
         existing_user = User.query.filter_by(email=body['email']).first()
         if existing_user:
             return jsonify({'error': 'El usuario ya existe'}), 400
@@ -56,6 +69,10 @@ def signup():
         new_user = User()
         new_user.email = body['email']
         new_user.password = new_pass.decode()
+        new_user.user_name = body['user_name']
+        new_user.first_name = body['first_name']
+        new_user.last_name = body['last_name']
+        new_user.rol_id = rol_id
 
         db.session.add(new_user)
         db.session.commit()
