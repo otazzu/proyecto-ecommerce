@@ -5,13 +5,18 @@ import { Spinner } from "../components/Spinner";
 
 const INITIAL_STATE = {
 	email: '',
-	password: ''
+	password: '',
+	user_name: '',
+	first_name: '',
+	last_name: '',
+	img: ''
 }
 
 export const Singup = () => {
 	const navigate = useNavigate()
 	const [state, setState] = useState(INITIAL_STATE)
 	const [error, setError] = useState('')
+	const [rolType, setRolType] = useState('client')
 	const [repeatPassword, setRepeatPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 
@@ -64,7 +69,7 @@ export const Singup = () => {
 		setLoading(true)
 		try {
 
-			const result = await userService.SignupUser(state)
+			const result = await userService.SignupUser(state, rolType)
 			if (result.success) {
 				setLoading(false)
 				navigate('/login')
@@ -103,6 +108,42 @@ export const Singup = () => {
 										name="email"
 										onChange={handleChange}
 										value={state.email}
+										required
+									/>
+								</div>
+								<div className="mb-3">
+									<label htmlFor="user_name" className="form-label">Nombre de usuario</label>
+									<input
+										type="text"
+										className="form-control"
+										id="user_name"
+										name="user_name"
+										value={state.user_name}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+								<div className="mb-3">
+									<label htmlFor="first_name" className="form-label">Nombre</label>
+									<input
+										type="text"
+										className="form-control"
+										id="first_name"
+										name="first_name"
+										value={state.first_name}
+										onChange={handleChange}
+										required
+									/>
+								</div>
+								<div className="mb-3">
+									<label htmlFor="last_name" className="form-label">Apellido</label>
+									<input
+										type="text"
+										className="form-control"
+										id="last_name"
+										name="last_name"
+										value={state.last_name}
+										onChange={handleChange}
 										required
 									/>
 								</div>

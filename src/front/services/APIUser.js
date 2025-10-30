@@ -1,8 +1,8 @@
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const SignupUser = async (body) => {
+const SignupUser = async (body, rolType) => {
   try {
-    const response = await fetch(`${backendUrl}api/user/signup`, {
+    const response = await fetch(`${backendUrl}api/user/signup/${rolType}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
