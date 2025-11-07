@@ -86,23 +86,17 @@ export const Singup = () => {
 	}
 
 	return (
-		<div className="">
+		<div className="container">
 			<div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center mt-3">
-				<img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{"height":"175px", "width":"auto" }}/>
+				<img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />
 			</div>
-
-			{error && (
-				<div className="alert alert-danger" role="alert">
-					{error}
-				</div>
-			)}
 			<div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
 				<div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 					<h2 className="noto-sans-jp-title mb-5 text-center text-2xl/9 font-bold tracking-tight text-white">Crear cuenta</h2>
 					{loading ?
 						(<div className="text-center my-3"><Spinner /></div>) :
 						(
-							<form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 border-2 border-sky-600 bg-gray-800 rounded-md">
+							<form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 border-2 border-gray-700 bg-gray-800 rounded-md">
 
 								<div>
 									<label htmlFor="user_name" className="block text-sm/6 font-medium text-gray-100">Nombre de usuario</label>
@@ -182,17 +176,22 @@ export const Singup = () => {
 								</div>
 
 								<div>
-									<button type="submit" className="flex w-full rounded-2 justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fuchsia-500" style={{"border-radius": "30px;"}}>Crear cuenta</button>
+									<button type="submit" className="flex w-full rounded-2 justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500" style={{ "border-radius": "30px;" }}>Crear cuenta</button>
 								</div>
 							</form>
 						)}
+					{error && (
+						<div className="my-2 alert alert-danger">
+							{error}
+						</div>
+					)}
 					<div className="py-6 flex items-center">
-						<div className="flex-1 h-px bg-gray-700"></div>
+						<div className="flex-1 h-px bg-gray-400"></div>
 						<p className="px-3 text-gray-400 m-0">Ya tengo una cuenta</p>
-						<div className="flex-1 h-px bg-gray-700"></div>
+						<div className="flex-1 h-px bg-gray-400"></div>
 					</div>
 					<div className="flex justify-center">
-						<Link to="/login" className="rounded-md justify-center bg-rose-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-rose-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">Ir al login →</Link>
+						<Link to="/login" className="rounded-md justify-center bg-pink-600 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">Ir al login</Link>
 					</div>
 				</div>
 			</div>
