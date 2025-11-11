@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { userService } from "../services/APIUser";
+import { Spinner } from "../components/Spinner";
 
 
 export const Welcome = () => {
 
     const [error, setError] = useState("")
-    const [enable, setEnable] = useState(true)
-    const [mail, setMail] = useState("")
+    const [allowed, setAllowed] = useState(true)
+    const [user, setUser] = useState("")
+    const [isAdmin, setIsAdmin] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -16,18 +18,19 @@ export const Welcome = () => {
 
     const fetchData = async () => {
         try {
-            setEnable(true)
+            setAllowed(true)
             const response = await userService.ProtectedPage()
             if (!response.success) {
-                setEnable(false)
+                setAllowed(false)
                 setError(response.error)
                 countDown()
             }
-            const catParam = "@"
-            const cutMail = response.data.email.split(catParam)
-            const name = cutMail[0]
-            setMail(name)
-            console.log(mail)
+            if (response.data.rol.type === "seller") {
+                setIsAdmin(true)
+            }
+            const userName = response.data.user_name
+            setUser(userName)
+            console.log(userName)
 
         } catch (error) {
             console.log(error)
@@ -43,11 +46,16 @@ export const Welcome = () => {
 
     return (
         <div>
-            {enable ?
+            {allowed ?
                 <div className="text-center mt-5">
-                    <h1 className="mb-5">Bienvenido!</h1>
-                    <h2 className="text-info p-3">{mail}</h2>
-                    <Link to="/login" className="btn btn-primary w-50">Log out</Link>
+                    <h1 className="mb-5 text-white">¡Bienvenido</h1>
+                    {isAdmin ? <>
+                        <h1 className="text-white">{user}!</h1><p className="text-white">Usuario con privilegio administrador</p>
+                    </> : (
+                        <>
+                            <h2 className="noto-sans-jp-title text-white p-3">{user}!</h2>
+                        </>)}
+                    <Link to="/login" className="text-decoration-none px-25 py-2.5 bg-pink-600 rounded-md text-m/6 font-semibold text-white hover:bg-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">Log out</Link>
                 </div>
                 :
                 (
@@ -59,10 +67,8 @@ export const Welcome = () => {
                                 </div>
                             </div>
                             <div className="d-flex justify-content-center align-items-center">
-                                <p className="my-0 mx-2">Redirigiendo al login</p>
-                                <div className="spinner-border spinner-border-sm" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
+                                <p className="my-0 mx-2 text-white">Redirigiendo al login</p>
+                                <Spinner />
                             </div>
                         </div>
                     </div>

@@ -176,7 +176,7 @@ export const Singup = () => {
 								</div>
 
 								<div>
-									<button type="submit" className="flex w-full rounded-2 justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500" style={{ "border-radius": "30px;" }}>Crear cuenta</button>
+									<button type="submit" className="flex w-full rounded-2 justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">Crear cuenta</button>
 								</div>
 							</form>
 						)}
