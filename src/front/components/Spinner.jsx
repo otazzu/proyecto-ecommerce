@@ -5,8 +5,8 @@ import { Link } from "react-router-dom"
 export const Spinner = () => {
     return (
         <>
-            <div className="spinner-border text-primary m-auto" role="status">
-                <span className="sr-only">Loading...</span>
+            <div className="spinner-border text-light" role="status">
+                <span className="visually-hidden">Loading...</span>
             </div>
         </>
     )
