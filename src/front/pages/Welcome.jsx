@@ -59,15 +59,13 @@ export const Welcome = () => {
                 </div>
                 :
                 (
-                    <div className="d-flex flex-column vh-100">
-                        <div className="my-auto">
-                            <div className="alert alert-danger w-100" role="alert">
-                                <div className="d-flex justify-content-center">
-                                    {error}
-                                </div>
+                    <div className="flex flex-col items-center justify-center h-dvh text-center">
+                        <div className="w-screen">
+                            <div className="bg-red-950 text-red-400 p-2.5 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">
+                                {error}
                             </div>
-                            <div className="d-flex justify-content-center align-items-center">
-                                <p className="my-0 mx-2 text-white">Redirigiendo al login</p>
+                            <div className="flex justify-center items-center mt-4">
+                                <p className="mx-2 text-white">Redirigiendo al login</p>
                                 <Spinner />
                             </div>
                         </div>

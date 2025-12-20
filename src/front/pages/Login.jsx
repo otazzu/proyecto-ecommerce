@@ -51,7 +51,7 @@ export const Login = () => {
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <h2 className="noto-sans-jp-title mb-5 text-center text-2xl/9 font-bold tracking-tight text-white">Iniciar sesión</h2>
                     {logoutMsg && <div className="alert alert-info">{logoutMsg}</div>}
-                    {error && <div className="alert alert-danger">{error}</div>}
+                    {error && <div className="bg-red-950 text-red-400 p-2.5 my-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">{error}</div>}
                     {loading ? <div className="text-center my-3"><Spinner /></div> : (
                         <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 border-2 border-gray-700 bg-gray-800 rounded-md">
                             <div>
@@ -76,7 +76,7 @@ export const Login = () => {
                                     required
                                     className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
                             </div>
-                            <button type="submit" className="flex w-full rounded-2 justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">
+                            <button type="submit" className="flex w-full rounded-md justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">
                                 Login
                             </button>
                         </form>
@@ -89,7 +89,7 @@ export const Login = () => {
                         <div className="flex-1 h-px bg-gray-400"></div>
                     </div>
 
-                    <div className="d-flex justify-content-center mt-3">
+                    <div className="flex justify-center">
                         <Link to="/" className="rounded-md justify-center bg-pink-600 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">Ir al registro</Link>
                     </div>
                 </div>

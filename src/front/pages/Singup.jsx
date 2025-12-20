@@ -176,12 +176,12 @@ export const Singup = () => {
 								</div>
 
 								<div>
-									<button type="submit" className="flex w-full rounded-2 justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">Crear cuenta</button>
+									<button type="submit" className="flex w-full rounded-md justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">Crear cuenta</button>
 								</div>
 							</form>
 						)}
 					{error && (
-						<div className="my-2 alert alert-danger">
+						<div className="bg-red-950 text-red-400 p-2.5 mt-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">
 							{error}
 						</div>
 					)}
