@@ -36,7 +36,7 @@ export const Login = () => {
         const result = await userService.LoginUser({ email, password })
         setLoading(false)
         if (result.success) {
-            navigate("/welcome")
+            navigate("/")
         } else {
             setError(result.error)
         }
@@ -45,12 +45,14 @@ export const Login = () => {
     return (
         <div className="container">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center mt-3">
-                <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />
+                <Link to="/">
+                    <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />
+                </Link>
             </div>
             <div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <h2 className="noto-sans-jp-title mb-5 text-center text-2xl/9 font-bold tracking-tight text-white">Iniciar sesión</h2>
-                    {logoutMsg && <div className="alert alert-info">{logoutMsg}</div>}
+                    {logoutMsg && <div className="bg-red-950 text-red-400 p-2.5 my-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">{logoutMsg}</div>}
                     {error && <div className="bg-red-950 text-red-400 p-2.5 my-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">{error}</div>}
                     {loading ? <div className="text-center my-3"><Spinner /></div> : (
                         <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 border-2 border-gray-700 bg-gray-800 rounded-md">
@@ -90,7 +92,7 @@ export const Login = () => {
                     </div>
 
                     <div className="flex justify-center">
-                        <Link to="/" className="rounded-md justify-center bg-pink-600 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">Ir al registro</Link>
+                        <Link to="/signup" className="rounded-md justify-center bg-pink-600 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600">Ir al registro</Link>
                     </div>
                 </div>
             </div>

@@ -1,21 +1,85 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
+
+  const getUserRole = () => {
+    try {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      return user?.rol?.type ?? null;
+    } catch (error) {
+      console.error("Error al obtener el rol del usuario:", error);
+      return null;
+    }
+  };
+
+  // Obtener user para la imagen
+  const getUser = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem("user"));
+    } catch (error) {
+      return null;
+    }
+  };
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [userRole, setUserRole] = useState(getUserRole());
   const dropdownRef = useRef(null);
 
-  // Cerrar dropdown al hacer clic fuera
+  const user = getUser();
+  const userImg = user?.img || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
   useEffect(() => {
+    const handleStorage = () => {
+      setUserRole(getUserRole());
+    }
+
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     }
 
+    window.addEventListener('storage', handleStorage);
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('storage', handleStorage);
+    }
   }, []);
+
+  const userOptions = useMemo(() => {
+    if (!userRole) {
+      return [
+        { to: "/login", label: "Iniciar sesión" },
+        { to: "/signup", label: "Registrarse" }
+      ];
+    }
+
+    if (userRole === "client") {
+      return [
+        { to: "/modifyuser", label: "Editar Perfil" },
+        { to: "/product-pay", label: "Pedidos" },
+        { to: "/login", label: "Logout" }
+      ];
+    }
+
+    if (userRole === "seller") {
+      return [
+        { to: "/modifyuser", label: "Editar perfil" },
+        { to: "/services", label: "Servicios" },
+        { to: "/createService", label: "Crear Producto" },
+        { to: "/professional-services", label: "Servicios contratados a mí" },
+        { to: "/create-user-detail", label: "Crear Detalle de Usuario" },
+        { to: "/select-service-to-modify", label: "Modificar Producto" },
+        { to: "/login", label: "Logout" }
+      ];
+    }
+
+    return [];
+  }, [userRole]);
 
   return (
     <>
@@ -32,7 +96,6 @@ export const Navbar = () => {
                 aria-expanded={isMenuOpen}
               >
                 <span className="sr-only">Open main menu</span>
-
                 {/* Icono hamburguesa */}
                 <svg
                   className={`size-6 ${isMenuOpen ? 'hidden' : 'block'}`}
@@ -43,7 +106,6 @@ export const Navbar = () => {
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                 </svg>
-
                 {/* Icono X */}
                 <svg
                   className={`size-6 ${isMenuOpen ? 'block' : 'hidden'}`}
@@ -56,23 +118,24 @@ export const Navbar = () => {
                 </svg>
               </button>
             </div>
-            {/* Resto del nav... */}
+
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex shrink-0 items-center">
-                <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Your Company" className="h-10 w-auto" />
+                <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-10 w-auto" />
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
-                  {/* <!-- Current: "bg-gray-950/50 text-white", Default: "text-gray-300 hover:bg-white/5 hover:text-white" --> */}
-                  <a href="#" className="text-decoration-none rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50" >Dashboard</a>
-                  <a href="#" className="text-decoration-none rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Team</a>
-                  <a href="#" className="text-decoration-none rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Projects</a>
-                  <a href="#" className="text-decoration-none rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Calendar</a>
+                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Ichiban Kuji</a>
+                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Cajas Misteriosas</a>
+                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Novedades</a>
+                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Ofertas</a>
                 </div>
               </div>
             </div>
+
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <div className="relative ml-3" ref={dropdownRef}>
+              {/* Dropdown del usuario */}
+              <div className="relative ml-3">
                 <button
                   onClick={() => setIsOpen(!isOpen)}
                   className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
@@ -82,7 +145,7 @@ export const Navbar = () => {
                   <span className="absolute -inset-1.5"></span>
                   <span className="sr-only">Open user menu</span>
                   <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    src={userImg}
                     alt=""
                     className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
                   />
@@ -90,30 +153,28 @@ export const Navbar = () => {
 
                 {/* Dropdown Menu */}
                 <div
+                  ref={dropdownRef}
                   className={`absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 outline -outline-offset-1 outline-white/10 transition-all duration-100 ${isOpen
-                      ? 'opacity-100 scale-100'
-                      : 'opacity-0 scale-95 pointer-events-none'
+                    ? 'opacity-100 scale-100'
+                    : 'opacity-0 scale-95 pointer-events-none'
                     }`}
                 >
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 focus:outline-none"
-                  >
-                    Your profile
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 focus:outline-none"
-                  >
-                    Settings
-                  </a>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 focus:outline-none"
-                  >
-                    Sign out
-                  </a>
+                  {userOptions.map((option) => (
+                    <Link
+                      key={option.to}
+                      to={option.to}
+                      className="block px-4 py-2 text-sm text-gray-300 hover:bg-sky-600/50 focus:outline-none transition-colors"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {option.label}
+                    </Link>
+                  ))}
                 </div>
+              </div>
+
+              {/* Carrito de compra */}
+              <div className='text-white mx-3'>
+                <i className="fa-solid fa-cart-shopping"></i>
               </div>
             </div>
           </div>
@@ -123,8 +184,10 @@ export const Navbar = () => {
       {/* Menú móvil */}
       <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
         <div className="bg-gray-900 space-y-1 px-2 pb-3 pt-2">
-          <a href="#" className="text-decoration-none block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Dashboard</a>
-          <a href="#" className="text-decoration-none block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Team</a>
+          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Ichiban Kuji</a>
+          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Cajas Misteriosas</a>
+          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Novedades</a>
+          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Ofertas</a>
         </div>
       </div>
     </>

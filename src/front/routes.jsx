@@ -6,9 +6,9 @@ import {
   Route,
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
-import { Singup } from "./pages/Singup";
+import { Signup } from "./pages/Signup";
 import { Login } from "./pages/Login";
-import { Welcome } from "./pages/Welcome";
+import { Home } from "./pages/Home";
 import { Test } from "./pages/Test";
 
 export const router = createBrowserRouter(
@@ -23,10 +23,10 @@ export const router = createBrowserRouter(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
 
       {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-      <Route path="/" element={<Singup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/welcome" element={<Welcome />} />
-      <Route path="/test" element={<Test />} />
+      <Route index element={<Home />} />
+      <Route path="login" element={<Login />} />
+      <Route path="signup" element={<Signup />} />
+      <Route path="test" element={<Test />} />
     </Route>
   )
 );

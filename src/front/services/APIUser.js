@@ -70,8 +70,8 @@ const ProtectedPage = async () => {
   try {
     const url = `${backendUrl}api/user/welcome`;
     const token = sessionStorage.getItem("token");
-    if (!token){
-      return {success: false, error: "Acceso no autorizado"};
+    if (!token) {
+      return { success: false, error: "Acceso no autorizado" };
     }
     const response = await fetch(url, {
       method: "GET",
@@ -89,10 +89,10 @@ const ProtectedPage = async () => {
     console.error("Error al obtener usuario:", error);
     return { success: false, error: "Error de conexión al obtener usuario" };
   }
-}
+};
 
 export const userService = {
   SignupUser,
   LoginUser,
-  ProtectedPage
+  ProtectedPage,
 };

@@ -25,13 +25,15 @@ def validate_password(password):
         return False
     return True
 
+
 def get_rol_id_by_type(rol_type):
     rol = Rol.query.filter_by(type=rol_type).first()
     if rol:
         return rol.id
     return None
 
-@api.route ('/users', methods= ['GET'])
+
+@api.route('/users', methods=['GET'])
 def get_users():
     all_users = User.query.all()
     all_user_serialize = list(map(lambda user: user.serialize(), all_users))
@@ -58,7 +60,8 @@ def signup(rol_type):
         rol_id = get_rol_id_by_type(rol_type)
         print(rol_id, rol_type)
         if rol_id is None:
-            return jsonify({'error': 'El tipo de rol debe ser "client" o "seller"'}), 400
+            print('Rol no encontrado')
+            return jsonify({'error': 'Contacte con el administrador'}), 400
 
         existing_user = User.query.filter_by(email=body['email']).first()
         if existing_user:
@@ -123,7 +126,7 @@ def protected_page():
         user = User.query.get(current_user_id)
         if not user:
             return jsonify({'error': 'Usuario no encontrado'}), 404
-        
+
         return jsonify(user.serialize()), 200
 
     except Exception as e:

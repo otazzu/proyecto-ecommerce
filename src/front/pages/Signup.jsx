@@ -12,7 +12,7 @@ const INITIAL_STATE = {
 	img: ''
 }
 
-export const Singup = () => {
+export const Signup = () => {
 	const navigate = useNavigate()
 	const [state, setState] = useState(INITIAL_STATE)
 	const [error, setError] = useState('')
@@ -88,7 +88,9 @@ export const Singup = () => {
 	return (
 		<div className="container">
 			<div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center mt-3">
-				<img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />
+				<Link to="/">
+					<img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />
+				</Link>
 			</div>
 			<div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
 				<div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
