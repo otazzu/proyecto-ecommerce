@@ -22,6 +22,14 @@ export const Navbar = () => {
     }
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    setUserRole(null);
+    setIsOpen(false);
+    window.dispatchEvent(new Event('userChanged'));
+  }
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState(getUserRole());
@@ -42,11 +50,13 @@ export const Navbar = () => {
     }
 
     window.addEventListener('storage', handleStorage);
+    window.addEventListener('userChanged', handleStorage);
     document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('userChanged', handleStorage);
     }
   }, []);
 
@@ -61,8 +71,7 @@ export const Navbar = () => {
     if (userRole === "client") {
       return [
         { to: "/modifyuser", label: "Editar Perfil" },
-        { to: "/product-pay", label: "Pedidos" },
-        { to: "/login", label: "Logout" }
+        { to: "/product-pay", label: "Pedidos" }
       ];
     }
 
@@ -73,8 +82,7 @@ export const Navbar = () => {
         { to: "/createService", label: "Crear Producto" },
         { to: "/professional-services", label: "Servicios contratados a mí" },
         { to: "/create-user-detail", label: "Crear Detalle de Usuario" },
-        { to: "/select-service-to-modify", label: "Modificar Producto" },
-        { to: "/login", label: "Logout" }
+        { to: "/select-service-to-modify", label: "Modificar Producto" }
       ];
     }
 
@@ -169,6 +177,13 @@ export const Navbar = () => {
                       {option.label}
                     </Link>
                   ))}
+                  {userRole && (
+                    <Link
+                      to={'/'}
+                      className='block px-4 py-2 text-sm text-gray-300 hover:bg-sky-600/50 focus:outline-none transition-colors'
+                      onClick={handleLogout}>
+                      Cerrar sesión
+                    </Link>)}
                 </div>
               </div>
 

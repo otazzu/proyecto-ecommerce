@@ -9,25 +9,14 @@ export const Login = () => {
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false);
-    const [logoutMsg, setLogoutMsg] = useState("");
     const navigate = useNavigate()
 
     useEffect(() => {
         const user = sessionStorage.getItem("user");
         if (user) {
-            sessionStorage.removeItem("user");
-            sessionStorage.removeItem("token");
-            window.dispatchEvent(new Event('userChanged'));
-            timerMsg()
+            navigate("/");
         }
     }, [])
-
-    const timerMsg = () => {
-        setLogoutMsg("Sesión cerrada correctamente.");
-        setTimeout(() => {
-            setLogoutMsg("")
-        }, 3000)
-    }
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -52,7 +41,6 @@ export const Login = () => {
             <div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
                 <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                     <h2 className="noto-sans-jp-title mb-5 text-center text-2xl/9 font-bold tracking-tight text-white">Iniciar sesión</h2>
-                    {logoutMsg && <div className="bg-red-950 text-red-400 p-2.5 my-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">{logoutMsg}</div>}
                     {error && <div className="bg-red-950 text-red-400 p-2.5 my-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">{error}</div>}
                     {loading ? <div className="text-center my-3"><Spinner /></div> : (
                         <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 border-2 border-gray-700 bg-gray-800 rounded-md">
