@@ -33,14 +33,15 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [userRole, setUserRole] = useState(getUserRole());
+  const [user, setUser] = useState(getUser());
   const dropdownRef = useRef(null);
 
-  const user = getUser();
   const userImg = user?.img || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   useEffect(() => {
     const handleStorage = () => {
       setUserRole(getUserRole());
+      setUser(getUser());
     }
 
     const handleClickOutside = (event) => {
@@ -70,14 +71,14 @@ export const Navbar = () => {
 
     if (userRole === "client") {
       return [
-        { to: "/modifyuser", label: "Editar Perfil" },
+        { to: "/updateuser", label: "Editar Perfil" },
         { to: "/product-pay", label: "Pedidos" }
       ];
     }
 
     if (userRole === "seller") {
       return [
-        { to: "/modifyuser", label: "Editar perfil" },
+        { to: "/updateuser", label: "Editar perfil" },
         { to: "/services", label: "Servicios" },
         { to: "/createService", label: "Crear Producto" },
         { to: "/professional-services", label: "Servicios contratados a mí" },
@@ -129,7 +130,9 @@ export const Navbar = () => {
 
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex shrink-0 items-center">
-                <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-10 w-auto" />
+                <Link to="/">
+                  <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-10 w-auto" />
+                </Link>
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
