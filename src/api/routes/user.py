@@ -5,8 +5,17 @@ import re
 from api.database.db import db
 from api.models import Rol
 from api.models.User import User
+import cloudinary.uploader
+import cloudinary
+import os
 
 api = Blueprint('api/user', __name__)
+
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 
 
 def validate_email(email):
@@ -25,13 +34,15 @@ def validate_password(password):
         return False
     return True
 
+
 def get_rol_id_by_type(rol_type):
     rol = Rol.query.filter_by(type=rol_type).first()
     if rol:
         return rol.id
     return None
 
-@api.route ('/users', methods= ['GET'])
+
+@api.route('/users', methods=['GET'])
 def get_users():
     all_users = User.query.all()
     all_user_serialize = list(map(lambda user: user.serialize(), all_users))
@@ -58,7 +69,8 @@ def signup(rol_type):
         rol_id = get_rol_id_by_type(rol_type)
         print(rol_id, rol_type)
         if rol_id is None:
-            return jsonify({'error': 'El tipo de rol debe ser "client" o "seller"'}), 400
+            print('Rol no encontrado')
+            return jsonify({'error': 'Contacte con el administrador'}), 400
 
         existing_user = User.query.filter_by(email=body['email']).first()
         if existing_user:
@@ -114,17 +126,51 @@ def login():
         return jsonify({'error': str(e)}), 500
 
 
-@api.route('/welcome', methods=['GET'])
+@api.route('/update_user', methods=['PUT', 'GET'])
 @jwt_required()
-def protected_page():
-
+def update_user():
     try:
         current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
         if not user:
             return jsonify({'error': 'Usuario no encontrado'}), 404
-        
-        return jsonify(user.serialize()), 200
+
+        # Si es una solicitud GET, devolver los datos del usuario -> get current user
+
+        if request.method == 'GET':
+            return jsonify(user.serialize()), 200
+
+        body = request.get_json()
+        for field in ['user_name', 'first_name', 'last_name', 'email', 'password', 'img']:
+            if field in body and body[field]:
+                if field == 'password':
+                    if not validate_password(body['password']):
+                        return jsonify({'error': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número'}), 400
+                    user.password = bcrypt.hashpw(
+                        body['password'].encode(), bcrypt.gensalt()).decode()
+                elif field == 'email':
+                    if not validate_email(body['email']):
+                        return jsonify({'error': 'Formato de email inválido'}), 400
+                    user.email = body['email']
+                elif field == 'img':
+                    img_value = body['img']
+
+                    if img_value.startswith('data:image'):
+                        try:
+                            upload_result = cloudinary.uploader.upload(
+                                img_value, folder="kurisushop_users")
+                            img_url = upload_result.get('secure_url')
+                            user.img = img_url
+                        except Exception as img_exc:
+                            print('ERROR SUBIENDO IMAGEN A CLOUDINARY:', img_exc)
+                    else:
+                        user.img = img_value
+                else:
+                    setattr(user, field, body[field])
+
+        db.session.commit()
+        return jsonify({'message': 'Usuario actualizado', 'user': user.serialize()}), 200
 
     except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500
