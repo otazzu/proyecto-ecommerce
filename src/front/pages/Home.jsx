@@ -1,8 +1,6 @@
 import React from "react";
 
 export const Home = () => {
-    const user = sessionStorage.getItem("user")
-    const userName = user ? JSON.parse(user).first_name : 'Invitado';
 
     return (
         <div>
