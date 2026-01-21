@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useNavigate, Link } from "react-router-dom";
 import { userService } from "../services/APIUser";
 import { Spinner } from "../components/Spinner";
@@ -86,97 +86,97 @@ export const Signup = () => {
 	}
 
 	return (
-		<div className="container">
+		<div className="container mx-auto">
 			<div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center mt-3">
 				<Link to="/">
 					<img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />
 				</Link>
 			</div>
 			<div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
-				<div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+				<div className="mt-10 mx-auto w-full max-w-4xl">
 					<h2 className="noto-sans-jp-title mb-5 text-center text-2xl/9 font-bold tracking-tight text-white">Crear cuenta</h2>
 					{loading ?
 						(<div className="text-center my-3"><Spinner /></div>) :
 						(
 							<form onSubmit={handleSubmit} className="space-y-6 px-6 py-6 border-2 border-gray-700 bg-gray-800 rounded-md">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+									<div>
+										<label htmlFor="user_name" className="block text-sm/6 font-medium text-gray-100">Nombre de usuario</label>
+										<div className="mt-2">
+											<input
+												id="user_name"
+												type="text"
+												name="user_name"
+												onChange={handleChange}
+												value={state.user_name} required
+												className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+										</div>
+									</div>
 
-								<div>
-									<label htmlFor="user_name" className="block text-sm/6 font-medium text-gray-100">Nombre de usuario</label>
-									<div className="mt-2">
-										<input
-											id="user_name"
-											type="text"
-											name="user_name"
-											onChange={handleChange}
-											value={state.user_name} required
-											className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+									<div>
+										<label htmlFor="first_name" className="block text-sm/6 font-medium text-gray-100">Nombre</label>
+										<div className="mt-2">
+											<input id="first_name"
+												type="text"
+												name="first_name"
+												onChange={handleChange}
+												value={state.first_name} required
+												className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+										</div>
+									</div>
+
+									<div>
+										<label htmlFor="last_name" className="block text-sm/6 font-medium text-gray-100">Apellidos</label>
+										<div className="mt-2">
+											<input id="last_name"
+												type="text"
+												name="last_name"
+												onChange={handleChange}
+												value={state.last_name} required
+												className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+										</div>
+									</div>
+
+									<div>
+										<label htmlFor="email" className="block text-sm/6 font-medium text-gray-100">Email</label>
+										<div className="mt-2">
+											<input id="email"
+												type="email"
+												name="email"
+												onChange={handleChange}
+												value={state.email} required
+												className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+										</div>
+									</div>
+
+									<div>
+										<div className="flex items-center justify-between">
+											<label htmlFor="password" className="block text-sm/6 font-medium text-gray-100">Contraseña</label>
+										</div>
+										<div className="mt-2">
+											<input id="password"
+												type="password"
+												name="password"
+												onChange={handleChange}
+												value={state.password} required
+												className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+										</div>
+									</div>
+
+									<div>
+										<div className="flex items-center justify-between">
+											<label htmlFor="repeat_password" className="block text-sm/6 font-medium text-gray-100">Repetir Contraseña</label>
+										</div>
+										<div className="mt-2">
+											<input id="repeat_password"
+												type="password"
+												name="repeat_password"
+												value={repeatPassword}
+												onChange={event => setRepeatPassword(event.target.value)}
+												className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
+										</div>
 									</div>
 								</div>
-
-								<div>
-									<label htmlFor="first_name" className="block text-sm/6 font-medium text-gray-100">Nombre</label>
-									<div className="mt-2">
-										<input id="first_name"
-											type="text"
-											name="first_name"
-											onChange={handleChange}
-											value={state.first_name} required
-											className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
-									</div>
-								</div>
-
-								<div>
-									<label htmlFor="last_name" className="block text-sm/6 font-medium text-gray-100">Apellidos</label>
-									<div className="mt-2">
-										<input id="last_name"
-											type="text"
-											name="last_name"
-											onChange={handleChange}
-											value={state.last_name} required
-											className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
-									</div>
-								</div>
-
-								<div>
-									<label htmlFor="email" className="block text-sm/6 font-medium text-gray-100">Email</label>
-									<div className="mt-2">
-										<input id="email"
-											type="email"
-											name="email"
-											onChange={handleChange}
-											value={state.email} required
-											className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
-									</div>
-								</div>
-
-								<div>
-									<div className="flex items-center justify-between">
-										<label htmlFor="password" className="block text-sm/6 font-medium text-gray-100">Contraseña</label>
-									</div>
-									<div className="mt-2">
-										<input id="password"
-											type="password"
-											name="password"
-											onChange={handleChange}
-											value={state.password} required
-											className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
-									</div>
-								</div>
-
-								<div>
-									<div className="flex items-center justify-between">
-										<label htmlFor="repeat_password" className="block text-sm/6 font-medium text-gray-100">Repetir Contraseña</label>
-									</div>
-									<div className="mt-2">
-										<input id="repeat_password"
-											type="password"
-											name="repeat_password"
-											value={repeatPassword}
-											onChange={event => setRepeatPassword(event.target.value)}
-											className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6" />
-									</div>
-								</div>
-
 								<div>
 									<button type="submit" className="flex w-full rounded-md justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">Crear cuenta</button>
 								</div>

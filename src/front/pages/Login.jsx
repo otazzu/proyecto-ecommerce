@@ -32,7 +32,7 @@ export const Login = () => {
     }
 
     return (
-        <div className="container">
+        <div className="container mx-auto">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center mt-3">
                 <Link to="/">
                     <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu shop logo" style={{ "height": "145px", "width": "auto" }} />

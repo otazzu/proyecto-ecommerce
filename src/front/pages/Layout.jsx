@@ -7,12 +7,15 @@ import { useLocation } from 'react-router-dom';
 // Base component that maintains the navbar and footer throughout the page and the scroll to top functionality.
 export const Layout = () => {
     const location = useLocation();
-    const rutaSinNavbar = ['/login', '/signup'];
-    const hideNavbar = rutaSinNavbar.includes(location.pathname);
+    const rutaSinNavbarFooter = ['/login', '/signup'];
+    const hideNavbarFooter = rutaSinNavbarFooter.includes(location.pathname);
     return (
-        <ScrollToTop>
-            {!hideNavbar && <Navbar />}
-            <Outlet />
-        </ScrollToTop>
+        <div className="min-h-screen flex flex-col">
+            <ScrollToTop>
+                {!hideNavbarFooter && <Navbar />}
+                <Outlet />
+                {!hideNavbarFooter && <Footer />}
+            </ScrollToTop>
+        </div>
     )
 }

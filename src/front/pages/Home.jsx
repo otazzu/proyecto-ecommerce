@@ -1,11 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { CardProduct } from "../components/CardProduct";
+import { productService } from "../services/APIProduct";
 
 export const Home = () => {
 
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const data = await productService.getProducts();
+            setProducts(data);
+        };
+        fetchProducts();
+    }, []);
+
     return (
         <div>
-            <div className="text-center mt-5">
-                <h1 className="mb-5 text-white">¡Bienvenido!</h1>
+            <div className="container mx-auto px-4 mt-5">
+                <CardProduct
+                    products={products}
+                />
             </div>
         </div>
     )

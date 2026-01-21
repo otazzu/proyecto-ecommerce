@@ -71,19 +71,14 @@ export const Navbar = () => {
 
     if (userRole === "client") {
       return [
-        { to: "/updateuser", label: "Editar Perfil" },
-        { to: "/product-pay", label: "Pedidos" }
+        { to: "/updateuser", label: "Editar Perfil" }
       ];
     }
 
     if (userRole === "seller") {
       return [
         { to: "/updateuser", label: "Editar perfil" },
-        { to: "/services", label: "Servicios" },
-        { to: "/createService", label: "Crear Producto" },
-        { to: "/professional-services", label: "Servicios contratados a mí" },
-        { to: "/create-user-detail", label: "Crear Detalle de Usuario" },
-        { to: "/select-service-to-modify", label: "Modificar Producto" }
+        { to: "/createproduct", label: "Añadir Producto" }
       ];
     }
 
@@ -92,7 +87,7 @@ export const Navbar = () => {
 
   return (
     <>
-      <nav className="relative bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10">
+      <nav className="relative bg-gray-800 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-16 items-center justify-between">
 

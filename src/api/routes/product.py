@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from api.database.db import db
-from api.models import Rol
 from api.models.User import User
 from api.models.Product import Product
 import cloudinary.uploader
@@ -23,6 +22,22 @@ def get_products():
     return jsonify([product.serialize() for product in products]), 200
 
 
+@api.route('/products/<int:product_id>', methods=['GET'])
+@jwt_required(optional=True)
+def get_product_by_id(product_id):
+
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({"error": "Producto no encontrado"}), 404
+
+    current_user_id = get_jwt_identity()
+
+    if not product.status and product.user_id != current_user_id:
+        return jsonify({"error": "Producto no disponible"}), 403
+
+    return jsonify(product.serialize()), 200
+
+
 @api.route('/create', methods=['POST'])
 @jwt_required()
 def add_product():
@@ -33,7 +48,7 @@ def add_product():
     if "img" in body and body['img']:
         try:
             upload_result = cloudinary.uploader.upload(
-                body['img'], folder="kurisushop_products")
+                body['img'], folder="kurisushop_media")
             img_url = upload_result.get('secure_url')
         except Exception as img_exc:
             print('ERROR SUBIENDO IMAGEN A CLOUDINARY:', img_exc)
@@ -43,7 +58,7 @@ def add_product():
         try:
             upload_result = cloudinary.uploader.upload(
                 body['video'],
-                folder="handybox_users",
+                folder="kurisushop_media",
                 resource_type="video")
             video_url = upload_result.get('secure_url')
         except Exception as video_exc:
