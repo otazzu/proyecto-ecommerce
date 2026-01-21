@@ -126,7 +126,7 @@ export const UpdateUser = () => {
     const defaultImg = "https://cdn-icons-png.flaticon.com/512/149/149071.png"
 
     return (
-        <div className="container">
+        <div className="container mx-auto">
             <div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
                 <div className="mt-10 mx-auto w-full max-w-4xl">
                     <div className="flex flex-col items-center mb-8">

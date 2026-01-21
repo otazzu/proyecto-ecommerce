@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-
 .noto-sans-jp-title {
   font-family: "Noto Sans JP", sans-serif;
   font-optical-sizing: auto;
   font-weight: 600;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
