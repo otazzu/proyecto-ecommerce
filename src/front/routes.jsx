@@ -13,6 +13,9 @@ import { Test } from "./pages/Test";
 import { UpdateUser } from "./pages/UpdateUser";
 import { ProductDetail } from "./pages/ProductDetail";
 import { CreateProduct } from "./pages/CreateProduct";
+import { SelectProductToModify } from "./pages/SelectProductToModify";
+import { NotFound } from "./pages/NotFound";
+import { ModifyProduct } from "./pages/ModifyProduct";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,7 +26,7 @@ export const router = createBrowserRouter(
     // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
     // Root Route: All navigation will start from here.
-    <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
+    <Route path="/" element={<Layout />} errorElement={<NotFound />} >
 
       {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
       <Route index element={<Home />} />
@@ -33,6 +36,8 @@ export const router = createBrowserRouter(
       <Route path="updateuser" element={<UpdateUser />} />
       <Route path="createproduct" element={<CreateProduct />} />
       <Route path="product/products/:id" element={<ProductDetail />} />
+      <Route path="selectproducttomodify" element={<SelectProductToModify />} />
+      <Route path="selectproducttomodify/:id" element={<ModifyProduct />} />
     </Route>
   )
 );

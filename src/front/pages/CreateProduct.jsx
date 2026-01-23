@@ -107,10 +107,11 @@ export const CreateProduct = () => {
         <div className="container mx-auto">
             {!isEnabled ?
                 (
-                    <>
-                        <div className="bg-red-950 text-red-400 p-2.5 mt-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center mb-6">{error}</div>
-                        <Link to={"/"} className="flex rounded-md justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">Volver al inicio</Link>
-                    </>
+                    <div className="flex flex-col h-screen items-center justify-center">
+                        <h1 className="text-6xl font-bold text-white mb-4">403</h1>
+                        <p className="text-2xl text-white mb-8">Acceso no autorizado</p>
+                        <Link to="/" className="text-lg text-sky-500 hover:underline">Volver al inicio</Link>
+                    </div>
                 ) :
                 (
                     <div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
