@@ -15,7 +15,7 @@ export const ProductDetail = () => {
         const fetchProduct = async () => {
 
             const product = await productService.getProductById(id);
-            console.log(product);
+
             setProduct(product);
 
             if (product.img)
@@ -75,7 +75,7 @@ export const ProductDetail = () => {
     return (
         <div className='container mx-auto px-10'>
             <div className="flex flex-wrap -mx-4 mt-6">
-                <div className="w-full md:w-2/3 px-4">
+                <div className="w-full lg:w-2/3 px-4">
                     <div className='flex justify-center'>
                         <div className="media-container mx-auto">
                             {renderMainMedia()}
@@ -116,7 +116,7 @@ export const ProductDetail = () => {
                     </div>
                 </div>
                 {/* Columna derecha */}
-                <div className="w-full md:w-1/3 px-4 md:mt-0">
+                <div className="w-full lg:w-1/3 px-4 lg:mt-0">
                     <div className="border-2 border-gray-700 bg-gray-800 rounded-md shadow-sm p-4">
                         <div className='flex flex-col'>
                             <h1 className='product-title text-white'>

@@ -135,7 +135,7 @@ def update_user():
         if not user:
             return jsonify({'error': 'Usuario no encontrado'}), 404
 
-        # Si es una solicitud GET, devolver los datos del usuario -> get current user
+        # Si es una solicitud GET, devolver los datos del usuario -> get current user de la API
 
         if request.method == 'GET':
             return jsonify(user.serialize()), 200

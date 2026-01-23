@@ -16,12 +16,12 @@ export const CardProduct = ({ products }) => {
                         >
                             <img
                                 src={product.img || "https://placeholder.pics/svg/300x200"}
-                                className="rounded-t-lg w-72 max-h-50 min-h-50 object-cover"
+                                className="rounded-t-lg w-72 max-h-50 min-h-50 object-cover object-top"
                                 alt={product.name}
                             />
 
                             <div className="p-4">
-                                <div className="h-15 mb-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                                <div className="h-28 mb-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                                     <h5 className="text-lg font-semibold pr-2">
                                         {product.name}
                                     </h5>

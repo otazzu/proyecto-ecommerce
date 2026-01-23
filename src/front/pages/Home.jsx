@@ -8,7 +8,7 @@ export const Home = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const data = await productService.getProducts();
+            const data = await productService.getActivesProducts();
             setProducts(data);
         };
         fetchProducts();
