@@ -81,28 +81,6 @@ export const CreateProduct = () => {
         }
     }
 
-    const handleVideoChange = (event) => {
-        const file = event.target.files[0];
-
-        if (file && file.size > MAX_FILE_SIZE) {
-            setError(`El video no puede superar los 10 MB`);
-            event.target.value = ''; // Limpiar el input
-            return;
-        }
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setState(prev => ({ ...prev, video: reader.result }));
-                setError(''); // Limpiar error si todo va bien
-            };
-            reader.onerror = () => {
-                setError('Error al cargar el video');
-            }
-            reader.readAsDataURL(file);
-        }
-    };
-
     return (
         <div className="container mx-auto">
             {!isEnabled ?
@@ -149,33 +127,20 @@ export const CreateProduct = () => {
                                                 />
                                             </div>
                                         </div>
+                                        <div className="mb-6">
+                                            <label htmlFor="img" className="block mb-2 text-sm/6 font-medium text-gray-100">
+                                                Seleccionar imagen del producto
+                                            </label>
+                                            <input
+                                                id="img"
+                                                name="img"
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageChange}
+                                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                            />
+                                        </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                                            <div>
-                                                <label htmlFor="img" className="block mb-2 text-sm/6 font-medium text-gray-100">
-                                                    Seleccionar imagen del producto
-                                                </label>
-                                                <input
-                                                    id="img"
-                                                    name="img"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    onChange={handleImageChange}
-                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor="video" className="block mb-2 text-sm/6 font-medium text-gray-100">
-                                                    Seleccionar video del producto
-                                                </label>
-                                                <input
-                                                    id="video"
-                                                    name="video"
-                                                    type="file"
-                                                    accept="video/*"
-                                                    onChange={handleVideoChange}
-                                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-                                                />
-                                            </div>
                                             <div>
                                                 <label htmlFor="price" className="block text-sm/6 font-medium text-gray-100">Precio</label>
                                                 <div className="mt-2">
