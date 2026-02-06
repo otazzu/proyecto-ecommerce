@@ -10,6 +10,8 @@ class StripePay(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     stripe_payment_id: Mapped[str] = mapped_column(String(120), nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    shipping_address_id: Mapped[int] = mapped_column(
+        ForeignKey("address.id"), nullable=True)
     product_ids: Mapped[str] = mapped_column(String(255), nullable=False)
     product_quantities: Mapped[str] = mapped_column(
         String(255), nullable=False)
@@ -19,12 +21,14 @@ class StripePay(db.Model):
         DateTime(timezone=True), default=datetime.datetime.now)
 
     user = relationship("User")
+    shipping_address = relationship("Address")
 
     def serialize(self):
         return {
             "id": self.id,
             "stripe_payment_id": self.stripe_payment_id,
             "user_id": self.user_id,
+            "shipping_address": self.shipping_address.serialize() if self.shipping_address else None,
             "product_ids": self.product_ids.split(",") if self.product_ids else [],
             "product_quantities": [int(quantitie) for quantitie in self.product_quantities.split(",")] if self.product_quantities else [],
             "amount": self.amount,
