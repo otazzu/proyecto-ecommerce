@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c074ac05c2c7
+Revision ID: d8cd111ce992
 Revises: 
-Create Date: 2025-12-20 18:13:29.727046
+Create Date: 2026-02-05 17:12:25.600199
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c074ac05c2c7'
+revision = 'd8cd111ce992'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -38,14 +38,27 @@ def upgrade():
     sa.UniqueConstraint('password'),
     sa.UniqueConstraint('user_name')
     )
+    op.create_table('address',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('street', sa.String(length=255), nullable=False),
+    sa.Column('number', sa.String(length=20), nullable=False),
+    sa.Column('apartment', sa.String(length=50), nullable=True),
+    sa.Column('city', sa.String(length=100), nullable=False),
+    sa.Column('province', sa.String(length=100), nullable=False),
+    sa.Column('postal_code', sa.String(length=20), nullable=False),
+    sa.Column('country', sa.String(length=100), nullable=False),
+    sa.Column('phone', sa.String(length=20), nullable=True),
+    sa.Column('is_default', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('product',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=120), nullable=False),
     sa.Column('description', sa.Text(), nullable=False),
-    sa.Column('img', sa.String(length=255), nullable=True),
-    sa.Column('video', sa.String(length=500), nullable=True),
+    sa.Column('images', sa.JSON(), nullable=True),
     sa.Column('price', sa.Float(), nullable=False),
-    sa.Column('url', sa.String(length=120), nullable=True),
     sa.Column('review', sa.Float(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('status', sa.Boolean(), nullable=True),
@@ -56,11 +69,13 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('stripe_payment_id', sa.String(length=120), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('shipping_address_id', sa.Integer(), nullable=True),
     sa.Column('product_ids', sa.String(length=255), nullable=False),
     sa.Column('product_quantities', sa.String(length=255), nullable=False),
     sa.Column('amount', sa.Float(), nullable=False),
     sa.Column('currency', sa.String(length=10), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.ForeignKeyConstraint(['shipping_address_id'], ['address.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -85,6 +100,7 @@ def downgrade():
     op.drop_table('review')
     op.drop_table('stripe_pay')
     op.drop_table('product')
+    op.drop_table('address')
     op.drop_table('user')
     op.drop_table('rol')
     # ### end Alembic commands ###

@@ -14,6 +14,8 @@ from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from api.routes.user import api as user_api
 from api.routes.product import api as product_api
+from api.routes.address import api as address_api
+from api.routes.productTechnicalDetails import api as product_technical_details_api
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -51,6 +53,9 @@ setup_commands(app)
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(user_api, url_prefix='/api/user')
 app.register_blueprint(product_api, url_prefix='/api/product')
+app.register_blueprint(address_api, url_prefix='/api/address')
+app.register_blueprint(product_technical_details_api,
+                       url_prefix='/api/product_technical_details')
 
 # Handle/serialize errors like a JSON object
 
