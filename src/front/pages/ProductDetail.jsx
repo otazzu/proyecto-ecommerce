@@ -17,8 +17,9 @@ export const ProductDetail = () => {
                 const product = await productService.getProductById(id);
                 setProduct(product);
 
-                if (product.img) {
-                    setSelectedImage(product.img);
+                // Establecer la primera imagen como seleccionada
+                if (product.images && product.images.length > 0) {
+                    setSelectedImage(product.images[0]);
                 }
             } catch (error) {
                 console.error('Error fetching product:', error);
@@ -42,7 +43,7 @@ export const ProductDetail = () => {
                 name: product.name,
                 price: product.price,
                 quantity: quantity,
-                image: product.img || "",
+                image: product.images && product.images.length > 0 ? product.images[0] : "",
             });
         }
 
@@ -66,7 +67,7 @@ export const ProductDetail = () => {
                     <div className='flex justify-center'>
                         <div className="media-container mx-auto">
                             <img
-                                src={selectedImage || product.img}
+                                src={selectedImage || (product.images && product.images[0]) || "https://placeholder.pics/svg/300x200"}
                                 className="rounded max-w-full w-full object-contain"
                                 alt={product.name || "Producto"}
                             />
@@ -74,37 +75,24 @@ export const ProductDetail = () => {
                     </div>
 
                     {/* Miniaturas de imágenes */}
-                    <div className="flex justify-center gap-2 my-3 flex-wrap">
-                        {product.img && (
-                            <div
-                                onClick={() => setSelectedImage(product.img)}
-                                className={`media-thumbnail${selectedImage === product.img ? ' selected' : ''}`}
-                            >
-                                <img
-                                    src={product.img}
-                                    alt="Miniatura"
-                                    className="media-thumbnail-img"
-                                />
-                                <i className="fa-solid fa-image media-thumbnail-icon"></i>
-                            </div>
-                        )}
-                        {/* Aquí puedes agregar más imágenes en el futuro, por ejemplo:
-                        {product.images?.map((img, index) => (
-                            <div
-                                key={index}
-                                onClick={() => setSelectedImage(img)}
-                                className={`media-thumbnail${selectedImage === img ? ' selected' : ''}`}
-                            >
-                                <img
-                                    src={img}
-                                    alt={`Miniatura ${index + 1}`}
-                                    className="media-thumbnail-img"
-                                />
-                                <i className="fa-solid fa-image media-thumbnail-icon"></i>
-                            </div>
-                        ))}
-                        */}
-                    </div>
+                    {product.images && product.images.length > 0 && (
+                        <div className="flex justify-center gap-2 my-3 flex-wrap">
+                            {product.images.map((img, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => setSelectedImage(img)}
+                                    className={`media-thumbnail${selectedImage === img ? ' selected' : ''}`}
+                                >
+                                    <img
+                                        src={img}
+                                        alt={`Miniatura ${index + 1}`}
+                                        className="media-thumbnail-img"
+                                    />
+                                    <i className="fa-solid fa-image media-thumbnail-icon"></i>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Columna derecha - Información del producto */}

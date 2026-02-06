@@ -15,7 +15,11 @@ export const CardProduct = ({ products }) => {
                             className="block"
                         >
                             <img
-                                src={product.img || "https://placeholder.pics/svg/300x200"}
+                                src={
+                                    product.images && product.images.length > 0
+                                        ? product.images[0]
+                                        : "https://placeholder.pics/svg/300x200"
+                                }
                                 className="rounded-t-lg w-72 max-h-50 min-h-50 object-cover object-top"
                                 alt={product.name}
                             />
