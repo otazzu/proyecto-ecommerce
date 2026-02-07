@@ -68,7 +68,7 @@ export const ProductDetail = () => {
                         <div className="media-container mx-auto">
                             <img
                                 src={selectedImage || (product.images && product.images[0]) || "https://placeholder.pics/svg/300x200"}
-                                className="rounded max-w-full w-full object-contain"
+                                className="rounded max-w-full w-full max-h-150 min-h-150 object-contain"
                                 alt={product.name || "Producto"}
                             />
                         </div>
@@ -102,7 +102,7 @@ export const ProductDetail = () => {
                             <h1 className='product-title text-white'>
                                 {product.name}
                             </h1>
-                            <p className='text-white text-xl mt-2'>${product.price}</p>
+                            <p className='text-white text-xl mt-2'>{product.price}€</p>
                         </div>
                         <div className='flex flex-col items-center gap-4'>
                             {/* Control de cantidad */}
