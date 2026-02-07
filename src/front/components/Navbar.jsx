@@ -77,7 +77,6 @@ export const Navbar = () => {
 
     if (userRole === "seller") {
       return [
-        { to: "/updateuser", label: "Editar perfil" },
         { to: "/createproduct", label: "Añadir Producto" },
         { to: "/selectproducttomodify", label: "Modificar producto" }
       ];
