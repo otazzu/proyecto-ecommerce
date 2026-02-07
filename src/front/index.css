@@ -15,3 +15,13 @@ body {
   background-size: cover;
   background-attachment: fixed;
 }
+
+/* Ocultar scrollbar pero mantener funcionalidad */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

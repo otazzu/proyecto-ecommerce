@@ -107,8 +107,81 @@ const updateTechnicalDetails = async (productId, technicalData) => {
   }
 };
 
+const searchByTechnicalDetails = async (filters) => {
+  try {
+    const params = new URLSearchParams();
+
+    if (filters.manufacturer)
+      params.append("manufacturer", filters.manufacturer);
+    if (filters.collection) params.append("collection", filters.collection);
+    if (filters.anime_series)
+      params.append("anime_series", filters.anime_series);
+    if (filters.character) params.append("character", filters.character);
+
+    const response = await fetch(
+      `${backendUrl}api/product_technical_details/technical-details/search?${params.toString()}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return { success: true, data };
+    }
+
+    return {
+      success: false,
+      error: data.error || "Error al buscar productos",
+    };
+  } catch (error) {
+    console.error("Error al buscar productos:", error);
+    return {
+      success: false,
+      error: "Error de conexión al buscar productos",
+    };
+  }
+};
+
+const getAllAnimeSeries = async () => {
+  try {
+    const response = await fetch(
+      `${backendUrl}api/product_technical_details/anime-series`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      return { success: true, data };
+    }
+
+    return {
+      success: false,
+      error: data.error || "Error al obtener series de anime",
+    };
+  } catch (error) {
+    console.error("Error al obtener series de anime:", error);
+    return {
+      success: false,
+      error: "Error de conexión al obtener series de anime",
+    };
+  }
+};
+
 export const technicalDetailsService = {
   getTechnicalDetails,
   createTechnicalDetails,
   updateTechnicalDetails,
+  searchByTechnicalDetails,
+  getAllAnimeSeries,
 };

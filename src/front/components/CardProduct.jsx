@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Link } from "react-router-dom";
 
 export const CardProduct = ({ products }) => {
-
     return (
-        <div className="flex flex-wrap justify-center gap-3">
-
+        <>
             {products.map((product) => {
-
                 return (
-                    <div key={product.id} className="noto-sans-jp-title text-2xl/9 font-bold tracking-tight text-white m-3 w-72 rounded-lg border-2 border-gray-700 bg-gray-800 shadow-lg shadow-zinc-900/50 hover:scale-105 transition-transform duration-200">
+                    <div key={product.id} className="noto-sans-jp-title text-2xl/9 font-bold tracking-tight text-white rounded-lg border-2 border-gray-700 bg-gray-800 shadow-lg shadow-zinc-900/50 hover:scale-105 transition-transform duration-200 w-full">
                         <Link
                             to={`/product/products/${product.id}`}
                             className="block"
@@ -20,7 +17,7 @@ export const CardProduct = ({ products }) => {
                                         ? product.images[0]
                                         : "https://placeholder.pics/svg/300x200"
                                 }
-                                className="rounded-t-lg w-72 max-h-50 min-h-50 object-cover object-top"
+                                className="rounded-t-lg w-full h-72 object-cover object-top"
                                 alt={product.name}
                             />
 
@@ -47,6 +44,6 @@ export const CardProduct = ({ products }) => {
                     </div>
                 );
             })}
-        </div >
+        </>
     )
 }
