@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { productService } from '../services/APIProduct';
+import { technicalDetailsService } from '../services/APIProductDetails';
 import { useParams } from 'react-router-dom';
 import '../custom styles/productDetail.css';
 import { Spinner } from '../components/Spinner';
@@ -7,9 +8,12 @@ import { Spinner } from '../components/Spinner';
 export const ProductDetail = () => {
     const { id } = useParams();
     const [product, setProduct] = useState({});
+    const [technicalDetails, setTechnicalDetails] = useState(null);
     const [selectedImage, setSelectedImage] = useState('');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('description');
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -20,6 +24,7 @@ export const ProductDetail = () => {
                 // Establecer la primera imagen como seleccionada
                 if (product.images && product.images.length > 0) {
                     setSelectedImage(product.images[0]);
+                    setCurrentImageIndex(0);
                 }
             } catch (error) {
                 console.error('Error fetching product:', error);
@@ -28,7 +33,19 @@ export const ProductDetail = () => {
             }
         };
 
+        const fetchTechnicalDetails = async () => {
+            try {
+                const response = await technicalDetailsService.getTechnicalDetails(id);
+                if (response && response.success && response.data) {
+                    setTechnicalDetails(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching technical details:', error);
+            }
+        };
+
         fetchProduct();
+        fetchTechnicalDetails();
     }, [id]);
 
     const handleAddToCart = () => {
@@ -51,6 +68,27 @@ export const ProductDetail = () => {
         window.dispatchEvent(new Event('cartChanged'));
     };
 
+    const handlePreviousImage = () => {
+        if (product.images && product.images.length > 0) {
+            const newIndex = currentImageIndex === 0 ? product.images.length - 1 : currentImageIndex - 1;
+            setCurrentImageIndex(newIndex);
+            setSelectedImage(product.images[newIndex]);
+        }
+    };
+
+    const handleNextImage = () => {
+        if (product.images && product.images.length > 0) {
+            const newIndex = currentImageIndex === product.images.length - 1 ? 0 : currentImageIndex + 1;
+            setCurrentImageIndex(newIndex);
+            setSelectedImage(product.images[newIndex]);
+        }
+    };
+
+    const handleThumbnailClick = (img, index) => {
+        setSelectedImage(img);
+        setCurrentImageIndex(index);
+    };
+
     if (loading) {
         return (
             <div className="container mx-auto px-10 flex justify-center items-center min-h-screen">
@@ -60,17 +98,46 @@ export const ProductDetail = () => {
     }
 
     return (
-        <div className='container mx-auto px-10'>
+        <div className='container mx-auto px-4 md:px-10'>
             <div className="flex flex-wrap -mx-4 mt-6">
                 {/* Columna izquierda - Imágenes */}
                 <div className="w-full lg:w-2/3 px-4">
-                    <div className='flex justify-center'>
-                        <div className="media-container mx-auto">
+                    <div className='flex justify-center relative group'>
+                        <div className="media-container mx-auto relative">
                             <img
                                 src={selectedImage || (product.images && product.images[0]) || "https://placeholder.pics/svg/300x200"}
-                                className="rounded max-w-full w-full max-h-150 min-h-150 object-contain"
+                                className="rounded max-w-full w-full object-contain"
                                 alt={product.name || "Producto"}
+                                style={{ maxHeight: '500px' }}
                             />
+
+                            {/* Botones de navegación - Solo se muestran si hay más de 1 imagen */}
+                            {product.images && product.images.length > 1 && (
+                                <>
+                                    {/* Botón anterior */}
+                                    <button
+                                        onClick={handlePreviousImage}
+                                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                        aria-label="Imagen anterior"
+                                    >
+                                        <i className="fas fa-chevron-left"></i>
+                                    </button>
+
+                                    {/* Botón siguiente */}
+                                    <button
+                                        onClick={handleNextImage}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full w-10 h-10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                        aria-label="Imagen siguiente"
+                                    >
+                                        <i className="fas fa-chevron-right"></i>
+                                    </button>
+
+                                    {/* Indicador de posición */}
+                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/50 text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        {currentImageIndex + 1} / {product.images.length}
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 
@@ -80,7 +147,7 @@ export const ProductDetail = () => {
                             {product.images.map((img, index) => (
                                 <div
                                     key={index}
-                                    onClick={() => setSelectedImage(img)}
+                                    onClick={() => handleThumbnailClick(img, index)}
                                     className={`media-thumbnail${selectedImage === img ? ' selected' : ''}`}
                                 >
                                     <img
@@ -96,7 +163,7 @@ export const ProductDetail = () => {
                 </div>
 
                 {/* Columna derecha - Información del producto */}
-                <div className="w-full lg:w-1/3 px-4 lg:mt-0">
+                <div className="w-full lg:w-1/3 px-4 mt-6 lg:mt-0">
                     <div className="border-2 border-gray-700 bg-gray-800 rounded-md shadow-sm p-4">
                         <div className='flex flex-col'>
                             <h1 className='product-title text-white'>
@@ -136,10 +203,88 @@ export const ProductDetail = () => {
                 </div>
             </div>
 
-            {/* Descripción del producto */}
-            <div className='mb-3'>
-                <h3 className="my-4 noto-sans-jp-title text-2xl text-white">Descripción</h3>
-                <p className="text-white">{product.description}</p>
+            {/* Sección de pestañas para Descripción y Detalles Técnicos */}
+            <div className="mt-8 mb-6">
+                {/* Pestañas */}
+                <div className="border-b-2 border-gray-700">
+                    <nav className="flex space-x-8">
+                        <button
+                            onClick={() => setActiveTab('description')}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'description'
+                                ? 'border-sky-600 text-sky-600'
+                                : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                                }`}
+                        >
+                            Descripción
+                        </button>
+                        {technicalDetails && (
+                            <button
+                                onClick={() => setActiveTab('technical')}
+                                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'technical'
+                                    ? 'border-sky-600 text-sky-600'
+                                    : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+                                    }`}
+                            >
+                                Detalles Técnicos
+                            </button>
+                        )}
+                    </nav>
+                </div>
+
+                {/* Contenido de las pestañas */}
+                <div className="mt-6">
+                    {activeTab === 'description' && (
+                        <div className="border-2 border-gray-700 bg-gray-800 rounded-md p-6">
+                            <h3 className="noto-sans-jp-title text-2xl text-white mb-4">Descripción</h3>
+                            <p className="text-gray-300 leading-relaxed">{product.description}</p>
+                        </div>
+                    )}
+
+                    {activeTab === 'technical' && technicalDetails && (
+                        <div className="border-2 border-gray-700 bg-gray-800 rounded-md p-6">
+                            <h3 className="noto-sans-jp-title text-2xl text-white mb-4">Especificaciones Técnicas</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {technicalDetails.manufacturer && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-400 text-sm mb-1">Fabricante</span>
+                                        <span className="text-white font-medium">{technicalDetails.manufacturer}</span>
+                                    </div>
+                                )}
+
+                                {technicalDetails.collection && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-400 text-sm mb-1">Colección</span>
+                                        <span className="text-white font-medium">{technicalDetails.collection}</span>
+                                    </div>
+                                )}
+
+                                {technicalDetails.anime_series && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-400 text-sm mb-1">Serie de Anime</span>
+                                        <span className="text-white font-medium">{technicalDetails.anime_series}</span>
+                                    </div>
+                                )}
+
+                                {technicalDetails.character && (
+                                    <div className="flex flex-col">
+                                        <span className="text-gray-400 text-sm mb-1">Personaje</span>
+                                        <span className="text-white font-medium">{technicalDetails.character}</span>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Si no hay ningún dato técnico */}
+                            {!technicalDetails.manufacturer &&
+                                !technicalDetails.collection &&
+                                !technicalDetails.anime_series &&
+                                !technicalDetails.character && (
+                                    <p className="text-gray-400 text-center py-4">
+                                        No hay detalles técnicos disponibles para este producto.
+                                    </p>
+                                )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
