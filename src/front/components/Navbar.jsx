@@ -131,10 +131,9 @@ export const Navbar = () => {
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
-                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Ichiban Kuji</a>
-                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Cajas Misteriosas</a>
-                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Novedades</a>
-                  <a href="#" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Ofertas</a>
+                  <Link to="/catalog" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Catálogo</Link>
+                  <Link to="/newproducts" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Novedades</Link>
+                  <Link to="/offers" className="rounded-md px-3 py-2 text-sm font-medium text-white hover:bg-sky-600/50">Ofertas</Link>
                 </div>
               </div>
             </div>
@@ -197,10 +196,9 @@ export const Navbar = () => {
       {/* Menú móvil */}
       <div className={`sm:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
         <div className="bg-gray-900 space-y-1 px-2 pb-3 pt-2">
-          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Ichiban Kuji</a>
-          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Cajas Misteriosas</a>
-          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Novedades</a>
-          <a href="#" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Ofertas</a>
+          <Link to="/catalog" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Catálogo</Link>
+          <Link to="/newproducts" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Novedades</Link>
+          <Link to="/offers" className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-sky-600/50">Ofertas</Link>
         </div>
       </div>
     </>
