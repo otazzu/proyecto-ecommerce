@@ -27,7 +27,7 @@ export const Catalog = () => {
         collections: []
     });
 
-    const [showFilters, setShowFilters] = useState(true);
+    const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
         fetchAllProducts();
