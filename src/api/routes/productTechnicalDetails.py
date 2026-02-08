@@ -154,3 +154,27 @@ def search_by_technical_details():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+@api.route('/anime-series', methods=['GET'])
+def get_all_anime_series():
+
+    try:
+        # Obtener todas las series únicas que tienen productos activos
+        anime_series = db.session.query(ProductTechnicalDetails.anime_series)\
+            .join(Product)\
+            .filter(
+                Product.status == True,
+                ProductTechnicalDetails.anime_series != None,
+                ProductTechnicalDetails.anime_series != ''
+        )\
+            .distinct()\
+            .all()
+
+        # Extraer solo los nombres de las series
+        series_list = [series[0] for series in anime_series if series[0]]
+
+        return jsonify(series_list), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
