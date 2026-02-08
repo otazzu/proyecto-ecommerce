@@ -16,6 +16,8 @@ import { CreateProduct } from "./pages/CreateProduct";
 import { SelectProductToModify } from "./pages/SelectProductToModify";
 import { NotFound } from "./pages/NotFound";
 import { ModifyProduct } from "./pages/ModifyProduct";
+import { Catalog } from "./pages/Catalog";
+import { NewProducts } from "./pages/NewProducts";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -38,6 +40,8 @@ export const router = createBrowserRouter(
       <Route path="product/products/:id" element={<ProductDetail />} />
       <Route path="selectproducttomodify" element={<SelectProductToModify />} />
       <Route path="selectproducttomodify/:id" element={<ModifyProduct />} />
+      <Route path="catalog" element={<Catalog />} />
+      <Route path="newproducts" element={<NewProducts />} />
     </Route>
   )
 );
