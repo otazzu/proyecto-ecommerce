@@ -7,11 +7,17 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from api.utils import APIException, generate_sitemap
 from api.database.db import db
+from api.models import *
 from flask_cors import CORS
 from api.admin import setup_admin
 from api.commands import setup_commands
 from flask_jwt_extended import JWTManager
 from api.routes.user import api as user_api
+from api.routes.product import api as product_api
+from api.routes.address import api as address_api
+from api.routes.productTechnicalDetails import api as product_technical_details_api
+from dotenv import load_dotenv
+load_dotenv()
 
 # from models import Person
 
@@ -22,6 +28,10 @@ app = Flask(__name__)
 CORS(app)
 app.url_map.strict_slashes = False
 
+app.config["JWT_SECRET_KEY"] = os.environ.get(
+    'JWT_SECRET_KEY', 'super-secret-key')
+jwt = JWTManager(app)
+
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -31,11 +41,6 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-app.config["JWT_SECRET_KEY"] = os.environ.get(
-    'JWT_SECRET_KEY', 'super-secret-key')
-jwt = JWTManager(app)
-
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 
@@ -47,6 +52,10 @@ setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(user_api, url_prefix='/api/user')
+app.register_blueprint(product_api, url_prefix='/api/product')
+app.register_blueprint(address_api, url_prefix='/api/address')
+app.register_blueprint(product_technical_details_api,
+                       url_prefix='/api/product_technical_details')
 
 # Handle/serialize errors like a JSON object
 
@@ -65,6 +74,8 @@ def sitemap():
     return send_from_directory(static_file_dir, 'index.html')
 
 # any other endpoint will try to serve it like a static file
+
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):

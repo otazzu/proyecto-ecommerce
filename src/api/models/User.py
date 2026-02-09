@@ -1,17 +1,37 @@
 from api.database.db import db
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey, String
 
 
 class User(db.Model):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    
+    user_name: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
+    first_name: Mapped[str] = mapped_column(String(120),  nullable=False)
+    last_name: Mapped[str] = mapped_column(String(120),  nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
+    rol_id: Mapped[int] = mapped_column(ForeignKey("rol.id"))
+    img: Mapped[str] = mapped_column(String(500),  nullable=True)
+
+    addresses = relationship(
+        "Address", back_populates="user", cascade="all, delete-orphan")
+    rol = relationship("Rol", back_populates="users")
+
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.email
+            "user_name": self.user_name,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "rol_id": self.rol_id,
+            "rol": self.rol.serialize() if self.rol else None,
+            "img": self.img,
+            "addresses": [address.serialize() for address in self.addresses] if self.addresses else []
+
         }
