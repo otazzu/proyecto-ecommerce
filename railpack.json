@@ -1,6 +1,0 @@
-{
-  "providers": ["python", "node"],
-  "python": {
-    "pythonVersion": "3.11"
-  }
-}
