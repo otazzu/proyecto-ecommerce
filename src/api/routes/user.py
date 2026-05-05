@@ -1,3 +1,4 @@
+import logging
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 import bcrypt
 from flask import Blueprint, jsonify, request
@@ -8,6 +9,9 @@ from api.models.User import User
 import cloudinary.uploader
 import cloudinary
 import os
+from api.limiter import limiter
+
+logger = logging.getLogger(__name__)
 
 api = Blueprint('api/user', __name__)
 
@@ -32,6 +36,8 @@ def validate_password(password):
         return False
     if not re.search(r'\d', password):
         return False
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False
     return True
 
 
@@ -50,6 +56,7 @@ def get_users():
 
 
 @api.route('/signup/<rol_type>', methods=['POST'])
+@limiter.limit("3 per minute")
 def signup(rol_type):
     try:
         body = request.get_json()
@@ -64,12 +71,12 @@ def signup(rol_type):
             return jsonify({'error': f'Formato del email invalido'}), 400
 
         if not validate_password(body['password']):
-            return jsonify({'error': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número'}), 400
+            return jsonify({'error': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial'}), 400
 
         rol_id = get_rol_id_by_type(rol_type)
-        print(rol_id, rol_type)
+        logger.info(f"Signup attempt for rol_type: {rol_type}, rol_id: {rol_id}")
         if rol_id is None:
-            print('Rol no encontrado')
+            logger.error('Rol no encontrado para rol_type: %s', rol_type)
             return jsonify({'error': 'Contacte con el administrador'}), 400
 
         existing_user = User.query.filter_by(email=body['email']).first()
@@ -93,10 +100,12 @@ def signup(rol_type):
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en signup: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 
 @api.route('/login', methods=['POST'])
+@limiter.limit("5 per minute")
 def login():
     try:
         body = request.get_json()
@@ -108,10 +117,10 @@ def login():
 
         user = User.query.filter_by(email=body['email']).first()
         if not user:
-            return jsonify({'error': 'Usuario no encontrado'}), 404
+            return jsonify({'error': 'Credenciales inválidas'}), 401
 
         if not bcrypt.checkpw(body['password'].encode(), user.password.encode()):
-            return jsonify({'error': 'Contraseña incorrecta'}), 401
+            return jsonify({'error': 'Credenciales inválidas'}), 401
 
         access_token = create_access_token(identity=str(user.id))
 
@@ -123,7 +132,8 @@ def login():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en login: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 
 @api.route('/update_user', methods=['PUT', 'GET'])
@@ -145,7 +155,7 @@ def update_user():
             if field in body and body[field]:
                 if field == 'password':
                     if not validate_password(body['password']):
-                        return jsonify({'error': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número'}), 400
+                        return jsonify({'error': 'La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial'}), 400
                     user.password = bcrypt.hashpw(
                         body['password'].encode(), bcrypt.gensalt()).decode()
                 elif field == 'email':
@@ -162,7 +172,7 @@ def update_user():
                             img_url = upload_result.get('secure_url')
                             user.img = img_url
                         except Exception as img_exc:
-                            print('ERROR SUBIENDO IMAGEN A CLOUDINARY:', img_exc)
+                            logger.error('Error subiendo imagen a Cloudinary: %s', img_exc)
                     else:
                         user.img = img_value
                 else:
@@ -173,4 +183,5 @@ def update_user():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en update_user: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500

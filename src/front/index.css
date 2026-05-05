@@ -1,22 +1,88 @@
+/* ===== Google Fonts ===== */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
 @import "tailwindcss";
 
-.noto-sans-jp-title {
-  font-family: "Noto Sans JP", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
+/* ===== CSS Variables - Neo-Tokyo Gallery ===== */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a25;
+  --bg-elevated: #22222f;
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a0b0;
+  --text-muted: #6a6a7a;
+  --accent-primary: #00d4aa;
+  --accent-secondary: #ff6b9d;
+  --accent-tertiary: #7c5cfc;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-active: rgba(0,212,170,0.4);
+  --gradient-hero: linear-gradient(135deg, #0a0a0f 0%, #1a1025 50%, #0a0a0f 100%);
+  --shadow-glow: 0 0 30px rgba(0,212,170,0.15);
 }
 
-html,
-body {
+/* ===== Base Styles ===== */
+html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
   background-repeat: no-repeat;
   background-size: cover;
   background-attachment: fixed;
 }
 
-/* Ocultar scrollbar pero mantener funcionalidad */
+/* ===== Grain Overlay ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ===== Typography Utility Classes ===== */
+.font-display {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-body {
+  font-family: 'DM Sans', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* ===== Hide Scrollbar Utility ===== */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
@@ -26,7 +92,22 @@ body {
   scrollbar-width: none;
 }
 
-/* Animaciones */
+/* ===== Text Clamping ===== */
+.line-clamp-2 {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ===== Animations ===== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -47,6 +128,37 @@ body {
   }
 }
 
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;
@@ -58,31 +170,162 @@ body {
   }
 }
 
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-8px) scale(1.02);
+  }
+  80% {
+    transform: translateX(4px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(0,212,170,0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0,212,170,0.5);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 1s ease-out;
 }
 
-/* Ocultar scrollbar pero mantener funcionalidad */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out both;
 }
 
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out both;
 }
 
-/* Limitar líneas de texto */
-.line-clamp-2 {
-  display: -webkit-box;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out both;
 }
 
-.line-clamp-3 {
-  display: -webkit-box;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+.animate-bounce-in {
+  animation: bounceIn 0.5s ease-out both;
+}
+
+/* ===== Glow Effects ===== */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(0,212,170,0.25), 0 0 60px rgba(0,212,170,0.1);
+}
+
+.glow-pink {
+  box-shadow: 0 0 20px rgba(255,107,157,0.25), 0 0 60px rgba(255,107,157,0.1);
+}
+
+.glow-accent-subtle {
+  box-shadow: 0 0 10px rgba(0,212,170,0.15);
+}
+
+/* ===== Shimmer Loader ===== */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-card) 0%,
+    var(--bg-elevated) 50%,
+    var(--bg-card) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ===== Card hover animation ===== */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-glow);
+  border-color: var(--border-active);
+}
+
+/* ===== Button hover lift ===== */
+.btn-lift {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,212,170,0.3);
+}
+
+/* ===== Selection Color ===== */
+::selection {
+  background-color: rgba(0,212,170,0.3);
+  color: var(--text-primary);
+}
+
+/* ===== Staggered animation delays ===== */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+
+/* ===== Industrial Panel Styles ===== */
+
+/* LED Indicator */
+.led-indicator {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.led-indicator.active {
+  background-color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-primary);
+}
+
+.led-indicator.inactive {
+  background-color: #ef4444;
+  box-shadow: 0 0 10px rgba(239,68,68,0.5);
+}
+
+/* Status Toggle (industrial switch) */
+.status-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  width: 2.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 9999px;
+}
+
+.status-toggle.active {
+  background-color: var(--accent-primary);
+}
+
+.status-toggle.inactive {
+  background-color: #374151;
+}
+
+/* Title Glitch Effect */
+.glitch-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  font-family: 'Outfit', sans-serif;
+  text-shadow: 2px 2px 0 var(--accent-secondary), -2px -2px 0 var(--accent-tertiary);
 }

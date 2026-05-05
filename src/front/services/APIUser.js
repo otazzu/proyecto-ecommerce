@@ -1,5 +1,27 @@
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+const handleApiError = (response) => {
+  if (response.status === 401) {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("user_id");
+      window.dispatchEvent(new Event("userChanged"));
+    }
+    return { success: false, isAuthError: true };
+  }
+  return null;
+};
+
+const handleUnauthorized = () => {
+  sessionStorage.removeItem("token");
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("user_id");
+  window.dispatchEvent(new Event("userChanged"));
+  window.location.href = "/login";
+};
+
 const SignupUser = async (body, rolType) => {
   try {
     const response = await fetch(`${backendUrl}api/user/signup/${rolType}`, {
@@ -53,6 +75,10 @@ const LoginUser = async (body) => {
       return { success: true, data };
     }
 
+    if (response.status === 401) {
+      return { success: false, error: data.error || "Credenciales inválidas" };
+    }
+
     return {
       success: false,
       error: data.error || "Error al iniciar sesión",
@@ -80,6 +106,10 @@ const getCurrentUser = async () => {
         Authorization: `Bearer ${token.trim()}`,
       },
     });
+
+    const authError = handleApiError(response);
+    if (authError) return { success: false, error: "Sesión expirada. Por favor, inicia sesión de nuevo." };
+
     const data = await response.json();
     if (response.ok) {
       return { success: true, data };
@@ -106,6 +136,10 @@ const updateUser = async (userData) => {
       },
       body: JSON.stringify(userData),
     });
+
+    const authError = handleApiError(response);
+    if (authError) return { success: false, error: "Sesión expirada. Por favor, inicia sesión de nuevo." };
+
     const data = await response.json();
     if (response.ok) {
       return { success: true, data };

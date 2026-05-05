@@ -1,4 +1,3 @@
-
 import os
 from flask_admin import Admin
 from api.database.db import db
@@ -76,9 +75,11 @@ class ProductTechnicalDetailsView(ModelView):
 
 
 def setup_admin(app):
-    app.secret_key = os.environ.get('FLASK_APP_KEY', 'sample key')
+    app.secret_key = os.environ.get('FLASK_APP_KEY')
+    if not app.secret_key:
+        raise RuntimeError("FLASK_APP_KEY no está configurada. Por favor, define la variable de entorno FLASK_APP_KEY.")
     app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-    admin = Admin(app, name='Kurisu Shop Admin', template_mode='bootstrap3')
+    admin = Admin(app, name='Kurisu Shop Admin')
 
     # Add your models here, for example this is how we add a the User model to the admin
     admin.add_view(UserView(User, db.session, name='Usuarios'))

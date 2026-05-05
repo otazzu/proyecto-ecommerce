@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { userService } from "../services/APIUser";
 import { Spinner } from "../components/Spinner";
 import { ManageAddresses } from "../components/ManageAddresses";
+import { useToast } from "../hooks/useToast";
 
 const INITIAL_STATE = {
     email: "",
@@ -21,6 +22,38 @@ export const UpdateUser = () => {
     const [repeatPassword, setRepeatPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("profile");
+    const [fieldTouched, setFieldTouched] = useState({});
+    const [imagePreview, setImagePreview] = useState(null);
+    const toast = useToast();
+
+    const defaultImg = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+
+    // Validators
+    const validators = {
+        email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        user_name: (v) => v.length >= 3,
+        first_name: (v) => v.length >= 2,
+        last_name: (v) => v.length >= 2,
+        passwordLength: (v) => !v || v.length >= 8,
+        passwordUppercase: (v) => !v || /[A-Z]/.test(v),
+        passwordLowercase: (v) => !v || /[a-z]/.test(v),
+        passwordNumber: (v) => !v || /\d/.test(v),
+        passwordsMatch: () => !state.password || state.password === repeatPassword,
+    };
+
+    const getPasswordStrength = () => {
+        if (!state.password) return 0;
+        let score = 0;
+        if (state.password.length >= 8) score++;
+        if (/[A-Z]/.test(state.password)) score++;
+        if (/[a-z]/.test(state.password)) score++;
+        if (/\d/.test(state.password)) score++;
+        return score;
+    };
+
+    const passwordStrength = getPasswordStrength();
+    const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-[var(--accent-primary)]'];
+    const strengthLabels = ['Muy débil', 'Débil', 'Media', 'Fuerte'];
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -36,6 +69,9 @@ export const UpdateUser = () => {
                         img: response.data.img || "",
                     });
                     setRolType(response.data.role || "client");
+                    if (response.data.img) {
+                        setImagePreview(response.data.img);
+                    }
                 } else if (response && !response.success) {
                     sessionStorage.removeItem("token");
                     sessionStorage.removeItem("user");
@@ -52,33 +88,21 @@ export const UpdateUser = () => {
     const validateForm = () => {
         if (!state.password) return true;
 
-        const validations = {
-            match: {
-                test: (pass) => pass === repeatPassword,
-                message: "Las contraseñas no coinciden",
-            },
-            length: {
-                test: (pass) => pass.length >= 8,
-                message: "La contraseña debe tener al menos 8 caracteres",
-            },
-            uppercase: {
-                test: (pass) => /[A-Z]/.test(pass),
-                message: "La contraseña debe contener al menos una mayúscula",
-            },
-            lowercase: {
-                test: (pass) => /[a-z]/.test(pass),
-                message: "La contraseña debe contener al menos una minúscula",
-            },
-            number: {
-                test: (pass) => /\d/.test(pass),
-                message: "La contraseña debe contener al menos un número",
-            },
-        };
-        for (const validation of Object.values(validations)) {
-            if (!validation.test(state.password)) {
-                setError(validation.message);
-                return false;
-            }
+        if (!validators.passwordLength(state.password)) {
+            setError("La contraseña debe tener al menos 8 caracteres");
+            return false;
+        }
+        if (!validators.passwordUppercase(state.password)) {
+            setError("La contraseña debe contener al menos una mayúscula");
+            return false;
+        }
+        if (!validators.passwordNumber(state.password)) {
+            setError("La contraseña debe contener al menos un número");
+            return false;
+        }
+        if (!validators.passwordsMatch()) {
+            setError("Las contraseñas no coinciden");
+            return false;
         }
         return true;
     };
@@ -87,9 +111,8 @@ export const UpdateUser = () => {
         event.preventDefault();
         setError("");
 
-        if (!validateForm()) {
-            return;
-        }
+        if (!validateForm()) return;
+
         setLoading(true);
         try {
             const result = await userService.updateUser(state, rolType);
@@ -97,6 +120,7 @@ export const UpdateUser = () => {
             if (result.success) {
                 sessionStorage.setItem("user", JSON.stringify(result.data.user));
                 window.dispatchEvent(new Event("userChanged"));
+                toast.showSuccess("Perfil actualizado correctamente");
                 navigate("/");
             } else {
                 setError(result.error);
@@ -120,223 +144,258 @@ export const UpdateUser = () => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setState((prev) => ({ ...prev, img: reader.result }));
+                setImagePreview(reader.result);
             };
             reader.readAsDataURL(file);
         }
     };
 
-    const defaultImg = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+    const handleBlur = (fieldName) => {
+        setFieldTouched({ ...fieldTouched, [fieldName]: true });
+    };
 
     return (
-        <div className="container mx-auto">
-            <div className="flex min-h-full flex-col justify-center px-6 pb-12 lg:px-8">
-                <div className="mt-10 mx-auto w-full max-w-4xl">
-                    {/* Pestañas */}
-                    <div className="mb-6 border-b-2 border-gray-700">
-                        <nav className="flex justify-center space-x-8">
-                            <button
-                                onClick={() => setActiveTab("profile")}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "profile"
-                                    ? "border-sky-600 text-sky-600"
-                                    : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                                    }`}
-                            >
-                                Editar Perfil
-                            </button>
-                            <button
-                                onClick={() => setActiveTab("addresses")}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === "addresses"
-                                    ? "border-sky-600 text-sky-600"
-                                    : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
-                                    }`}
-                            >
-                                Administrar Direcciones
-                            </button>
-                        </nav>
-                    </div>
+        <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
+            <div className="container mx-auto max-w-4xl px-4 py-8">
+                {/* Tabs */}
+                <div className="mb-6 border-b" style={{ borderColor: 'var(--border-subtle)' }}>
+                    <nav className="flex justify-center space-x-8">
+                        <button
+                            onClick={() => setActiveTab("profile")}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm font-body transition-colors ${activeTab === "profile"
+                                ? "border-[var(--accent-primary)] text-[var(--accent-primary)]"
+                                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                            }`}
+                        >
+                            Editar Perfil
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("addresses")}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm font-body transition-colors ${activeTab === "addresses"
+                                ? "border-[var(--accent-primary)] text-[var(--accent-primary)]"
+                                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
+                            }`}
+                        >
+                            Administrar Direcciones
+                        </button>
+                    </nav>
+                </div>
 
-                    {/* Contenido de las pestañas */}
-                    {activeTab === "profile" && (
-                        <>
-                            <div className="flex flex-col items-center mb-8">
+                {/* Profile Tab */}
+                {activeTab === "profile" && (
+                    <>
+                        {/* Image preview */}
+                        <div className="flex flex-col items-center mb-8 animate-fade-in-up">
+                            <div className="relative">
                                 <img
-                                    src={state.img || defaultImg}
-                                    className="rounded-full border-2 border-gray-700 w-30 h-30 object-cover"
+                                    src={imagePreview || state.img || defaultImg}
+                                    className="rounded-full border-2 w-28 h-28 object-cover"
+                                    style={{ borderColor: 'var(--accent-primary)' }}
                                     alt="imagen de usuario"
-                                    style={{ height: "120px", width: "auto" }}
                                 />
-                            </div>
-                            <h2 className="noto-sans-jp-title mb-5 text-center text-2xl/9 font-bold tracking-tight text-white">
-                                Modificar Perfil
-                            </h2>
-                            {loading ? (
-                                <div className="text-center my-3">
-                                    <Spinner />
+                                <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full flex items-center justify-center text-[var(--bg-primary)]"
+                                    style={{ backgroundColor: 'var(--accent-primary)' }}>
+                                    <i className="fas fa-camera text-xs"></i>
                                 </div>
-                            ) : (
-                                <form
-                                    onSubmit={handleSubmit}
-                                    className="space-y-6 px-6 py-6 border-2 border-gray-700 bg-gray-800 rounded-md"
-                                >
-                                    <div className="mb-6">
-                                        <label className="mb-2 block text-sm/6 font-medium text-gray-100">
-                                            Seleccionar imagen
+                            </div>
+                        </div>
+
+                        <h2 className="font-display mb-5 text-center text-2xl font-bold tracking-tight text-[var(--text-primary)]">
+                            Modificar Perfil
+                        </h2>
+
+                        {loading ? (
+                            <div className="text-center my-3"><Spinner /></div>
+                        ) : (
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-5 px-6 py-6 rounded-xl border border-[var(--border-subtle)]"
+                                style={{ backgroundColor: 'var(--bg-card)' }}
+                            >
+                                <div className="mb-4">
+                                    <label className="mb-2 block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                        Seleccionar imagen
+                                    </label>
+                                    <input
+                                        id="img"
+                                        name="img"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="block w-full text-sm text-[var(--text-muted)] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[var(--bg-elevated)] file:text-[var(--accent-primary)] hover:file:bg-[var(--accent-primary)] hover:file:text-[var(--bg-primary)] cursor-pointer file:transition-colors"
+                                />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label htmlFor="user_name" className="block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                            Nombre de usuario
                                         </label>
                                         <input
-                                            id="img"
-                                            name="img"
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleImageChange}
-                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                                            id="user_name"
+                                            type="text"
+                                            name="user_name"
+                                            onChange={handleChange}
+                                            onBlur={() => handleBlur('user_name')}
+                                            value={state.user_name}
+                                            required
+                                            className="block w-full rounded-lg px-4 py-2.5 text-base text-[var(--text-primary)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] font-body"
+                                            style={{ backgroundColor: 'var(--bg-elevated)' }}
                                         />
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label
-                                                htmlFor="user_name"
-                                                className="block text-sm/6 font-medium text-gray-100"
-                                            >
-                                                Nombre de usuario
-                                            </label>
-                                            <div className="mt-2">
-                                                <input
-                                                    id="user_name"
-                                                    type="text"
-                                                    name="user_name"
-                                                    onChange={handleChange}
-                                                    value={state.user_name}
-                                                    required
-                                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="first_name"
-                                                className="block text-sm/6 font-medium text-gray-100"
-                                            >
-                                                Nombre
-                                            </label>
-                                            <div className="mt-2">
-                                                <input
-                                                    id="first_name"
-                                                    type="text"
-                                                    name="first_name"
-                                                    onChange={handleChange}
-                                                    value={state.first_name}
-                                                    required
-                                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="last_name"
-                                                className="block text-sm/6 font-medium text-gray-100"
-                                            >
-                                                Apellidos
-                                            </label>
-                                            <div className="mt-2">
-                                                <input
-                                                    id="last_name"
-                                                    type="text"
-                                                    name="last_name"
-                                                    onChange={handleChange}
-                                                    value={state.last_name}
-                                                    required
-                                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="email"
-                                                className="block text-sm/6 font-medium text-gray-100"
-                                            >
-                                                Email
-                                            </label>
-                                            <div className="mt-2">
-                                                <input
-                                                    id="email"
-                                                    type="email"
-                                                    name="email"
-                                                    onChange={handleChange}
-                                                    value={state.email}
-                                                    required
-                                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label
-                                                htmlFor="password"
-                                                className="block text-sm/6 font-medium text-gray-100"
-                                            >
-                                                Contraseña (Opcional)
-                                            </label>
-                                            <div className="mt-2">
-                                                <input
-                                                    id="password"
-                                                    type="password"
-                                                    name="password"
-                                                    onChange={handleChange}
-                                                    value={state.password}
-                                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6"
-                                                />
-                                            </div>
-                                        </div>
 
-                                        <div>
-                                            <label
-                                                htmlFor="repeat_password"
-                                                className="block text-sm/6 font-medium text-gray-100"
-                                            >
-                                                Repetir Contraseña
-                                            </label>
-                                            <div className="mt-2">
-                                                <input
-                                                    id="repeat_password"
-                                                    type="password"
-                                                    name="repeat_password"
-                                                    value={repeatPassword}
-                                                    onChange={(event) =>
-                                                        setRepeatPassword(event.target.value)
-                                                    }
-                                                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-sky-600 sm:text-sm/6"
-                                                />
-                                            </div>
+                                    <div>
+                                        <label htmlFor="first_name" className="block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                            Nombre
+                                        </label>
+                                        <input
+                                            id="first_name"
+                                            type="text"
+                                            name="first_name"
+                                            onChange={handleChange}
+                                            onBlur={() => handleBlur('first_name')}
+                                            value={state.first_name}
+                                            required
+                                            className="block w-full rounded-lg px-4 py-2.5 text-base text-[var(--text-primary)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] font-body"
+                                            style={{ backgroundColor: 'var(--bg-elevated)' }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="last_name" className="block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                            Apellidos
+                                        </label>
+                                        <input
+                                            id="last_name"
+                                            type="text"
+                                            name="last_name"
+                                            onChange={handleChange}
+                                            onBlur={() => handleBlur('last_name')}
+                                            value={state.last_name}
+                                            required
+                                            className="block w-full rounded-lg px-4 py-2.5 text-base text-[var(--text-primary)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] font-body"
+                                            style={{ backgroundColor: 'var(--bg-elevated)' }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="email" className="block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                            Email
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                id="email"
+                                                type="email"
+                                                name="email"
+                                                onChange={handleChange}
+                                                onBlur={() => handleBlur('email')}
+                                                value={state.email}
+                                                required
+                                                className="block w-full rounded-lg px-4 py-2.5 text-base text-[var(--text-primary)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] font-body pr-10"
+                                                style={{ backgroundColor: 'var(--bg-elevated)' }}
+                                            />
+                                            {fieldTouched.email && state.email && (
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                    {validators.email(state.email) ? (
+                                                        <i className="fas fa-circle-check text-[var(--accent-primary)]"></i>
+                                                    ) : (
+                                                        <i className="fas fa-circle-xmark text-red-400"></i>
+                                                    )}
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
-                                    <div>
-                                        <button
-                                            type="submit"
-                                            className="flex w-full rounded-md justify-center bg-sky-700 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-sky-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500"
-                                        >
-                                            Actualizar
-                                        </button>
-                                    </div>
-                                    <div>
-                                        <Link
-                                            to={"/"}
-                                            className="flex w-full justify-center bg-pink-600 rounded-md px-3 py-1.5 text-m/6 font-semibold text-white hover:bg-pink-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-600"
-                                        >
-                                            Cancelar
-                                        </Link>
-                                    </div>
-                                </form>
-                            )}
 
-                            {error && (
-                                <div className="bg-red-950 text-red-400 p-2.5 mt-4 rounded-md outline-1 -outline-offset-1 outline-white/20 text-center">
-                                    {error}
+                                    <div>
+                                        <label htmlFor="password" className="block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                            Contraseña (Opcional)
+                                        </label>
+                                        <input
+                                            id="password"
+                                            type="password"
+                                            name="password"
+                                            onChange={handleChange}
+                                            value={state.password}
+                                            placeholder="Dejar vacío para no cambiar"
+                                            className="block w-full rounded-lg px-4 py-2.5 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] font-body"
+                                            style={{ backgroundColor: 'var(--bg-elevated)' }}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="repeat_password" className="block text-sm font-medium text-[var(--text-secondary)] font-body">
+                                            Repetir Contraseña
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                id="repeat_password"
+                                                type="password"
+                                                name="repeat_password"
+                                                value={repeatPassword}
+                                                onChange={(event) => setRepeatPassword(event.target.value)}
+                                                placeholder="Repetir contraseña"
+                                                className="block w-full rounded-lg px-4 py-2.5 text-base text-[var(--text-primary)] placeholder-[var(--text-muted)] border border-[var(--border-subtle)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] font-body pr-10"
+                                                style={{ backgroundColor: 'var(--bg-elevated)' }}
+                                            />
+                                            {repeatPassword && state.password && (
+                                                <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                    {validators.passwordsMatch() ? (
+                                                        <i className="fas fa-circle-check text-[var(--accent-primary)]"></i>
+                                                    ) : (
+                                                        <i className="fas fa-circle-xmark text-red-400"></i>
+                                                    )}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                            )}
-                        </>
-                    )}
 
-                    {activeTab === "addresses" && <ManageAddresses />}
-                </div>
+                                {/* Password strength indicator */}
+                                {state.password && (
+                                    <div className="mt-2 px-1">
+                                        <div className="flex gap-1 mb-1">
+                                            {[1, 2, 3, 4].map(i => (
+                                                <div
+                                                    key={i}
+                                                    className={`h-1.5 flex-1 rounded-full ${passwordStrength >= i ? strengthColors[passwordStrength - 1] : 'bg-[var(--bg-elevated)]'}`}
+                                                ></div>
+                                            ))}
+                                        </div>
+                                        <p className="text-xs font-body" style={{ color: passwordStrength >= 4 ? 'var(--accent-primary)' : passwordStrength >= 3 ? '#fbbf24' : '#ef4444' }}>
+                                            Fortaleza: {strengthLabels[passwordStrength - 1] || 'Muy débil'}
+                                        </p>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <button
+                                        type="submit"
+                                        className="w-full rounded-lg py-2.5 text-base font-semibold text-[var(--bg-primary)] btn-lift font-body"
+                                        style={{ backgroundColor: 'var(--accent-primary)' }}
+                                    >
+                                        Actualizar
+                                    </button>
+                                </div>
+                                <div>
+                                    <Link
+                                        to={"/"}
+                                        className="block w-full text-center rounded-lg py-2.5 font-semibold text-[var(--accent-secondary)] border border-[var(--accent-secondary)] hover:bg-[var(--accent-secondary)] hover:text-[var(--bg-primary)] transition-all duration-200 font-body"
+                                    >
+                                        Cancelar
+                                    </Link>
+                                </div>
+                            </form>
+                        )}
+
+                        {error && (
+                            <div className="bg-red-950/50 border border-red-500/30 text-red-400 p-3 mt-4 rounded-lg text-center font-body">
+                                {error}
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {activeTab === "addresses" && <ManageAddresses />}
             </div>
         </div>
     );

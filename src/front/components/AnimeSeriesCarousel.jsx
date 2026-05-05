@@ -21,37 +21,38 @@ export const AnimeSeriesCarousel = ({ animeSeries, products }) => {
 
     return (
         <div className="mb-12">
-            {/* Título de la serie con decoración */}
+            {/* Series title */}
             <div className="flex items-center mb-6 px-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-1 h-8 bg-gradient-to-b from-sky-600 to-pink-600 rounded-full"></div>
-                    <h2 className="noto-sans-jp-title text-2xl md:text-3xl font-bold text-white">
+                    <div className="w-1 h-8 rounded-full" style={{ background: 'linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary))' }}></div>
+                    <h2 className="font-display text-2xl md:text-3xl font-bold text-[var(--text-primary)]">
                         {animeSeries}
                     </h2>
                 </div>
-                <div className="ml-4 text-gray-400 text-sm">
+                <div className="ml-4 text-[var(--text-muted)] text-sm font-body">
                     {products.length} {products.length === 1 ? 'producto' : 'productos'}
                 </div>
             </div>
 
-            {/* Contenedor del carrusel */}
+            {/* Carousel container */}
             <div className="relative group">
-                {/* Gradiente izquierdo */}
-                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-black via-black/50 to-transparent z-10 pointer-events-none"></div>
+                {/* Left gradient */}
+                <div className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none" style={{ background: 'linear-gradient(to right, var(--bg-primary), transparent)' }}></div>
 
-                {/* Gradiente derecho */}
-                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-black via-black/50 to-transparent z-10 pointer-events-none"></div>
+                {/* Right gradient */}
+                <div className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none" style={{ background: 'linear-gradient(to left, var(--bg-primary), transparent)' }}></div>
 
-                {/* Botón izquierdo */}
+                {/* Left button */}
                 <button
                     onClick={() => scroll('left')}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:scale-110"
+                    className="absolute left-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:scale-110"
+                    style={{ backgroundColor: 'var(--accent-primary)' }}
                     aria-label="Scroll izquierda"
                 >
                     <i className="fas fa-chevron-left"></i>
                 </button>
 
-                {/* Contenedor de productos con scroll */}
+                {/* Products scroll container */}
                 <div
                     ref={scrollContainerRef}
                     className="flex overflow-x-auto gap-6 px-4 py-4 scrollbar-hide scroll-smooth"
@@ -75,10 +76,11 @@ export const AnimeSeriesCarousel = ({ animeSeries, products }) => {
                     ))}
                 </div>
 
-                {/* Botón derecho */}
+                {/* Right button */}
                 <button
                     onClick={() => scroll('right')}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white rounded-full w-12 h-12 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:scale-110"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full text-white opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg hover:scale-110"
+                    style={{ backgroundColor: 'var(--accent-secondary)' }}
                     aria-label="Scroll derecha"
                 >
                     <i className="fas fa-chevron-right"></i>
