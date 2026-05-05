@@ -1,55 +1,152 @@
-# Plantilla de WebApp con React JS y Flask API
+# Kurisu Shop - Tienda E-Commerce de Figuras Anime
 
-Construye aplicaciones web usando React.js para el front end y python/flask para tu API backend.
+Plataforma e-commerce especializada en figuras y coleccionables de anime. Construida con React.js en el frontend y Python/Flask en el backend.
 
-- La documentación se puede encontrar aquí: https://4geeks.com/docs/start/react-flask-template
-- Aquí hay un video sobre [cómo usar esta plantilla](https://www.youtube.com/watch?v=qBz6Ddd2m38)
-- Integrado con Pipenv para la gestión de paquetes.
-- Despliegue rápido a Render [en solo unos pocos pasos aquí](https://4geeks.com/es/docs/start/despliega-con-render-com).
-- Uso del archivo .env.
-- Integración de SQLAlchemy para la abstracción de bases de datos.
+## Roles de Usuario
 
-### 1) Instalación:
+El sistema define dos roles con capacidades diferentes:
 
-> Si usas Github Codespaces (recomendado) o Gitpod, esta plantilla ya vendrá con Python, Node y la base de datos Posgres instalados. Si estás trabajando localmente, asegúrate de instalar Python 3.10, Node.
+| Rol | Descripción |
+|-----|-------------|
+| **client** | Cliente habitual: puede navegar el catálogo, buscar productos, añadir al carrito y comprar |
+| **seller** | Vendedor: puede crear, editar, habilitar/deshabilitar y gestionar sus propios productos |
 
-Se recomienda instalar el backend primero, asegúrate de tener Python 3.10, Pipenv y un motor de base de datos (se recomienda Posgres).
+> **Nota:** El rol **seller** no se puede crear desde la interfaz web. Debe crearse mediante una petición POST desde Postman (u otra herramienta HTTP) al endpoint de registro con rol `seller`. Ver sección [Crear usuario Seller desde Postman](#crear-usuario-seller-desde-postman).
 
-1. Instala los paquetes de python: `$ pipenv install`
-2. Crea un archivo .env basado en el .env.example: `$ cp .env.example .env`
-3. Instala tu motor de base de datos y crea tu base de datos, dependiendo de tu base de datos, debes crear una variable DATABASE_URL con uno de los valores posibles, asegúrate de reemplazar los valores con la información de tu base de datos:
+## Tech Stack
 
-| Motor    | DATABASE_URL                                        |
-| -------- | --------------------------------------------------- |
-| SQLite   | sqlite:////test.db                                  |
-| MySQL    | mysql://username:password@localhost:port/example    |
-| Postgres | postgres://username:password@localhost:5432/example |
+**Backend:**
+- Python 3.10+ con Flask
+- SQLAlchemy (ORM)
+- Flask-JWT-Extended (autenticación JWT)
+- bcrypt (hash de contraseñas)
+- Cloudinary (almacenamiento de imágenes)
+- PostgreSQL (producción) / SQLite (desarrollo)
 
-4. Migra las migraciones: `$ pipenv run migrate` (omite si no has hecho cambios en los modelos en `./src/api/models.py`)
-5. Ejecuta las migraciones: `$ pipenv run upgrade`
-6. Ejecuta la aplicación: `$ pipenv run start`
+**Frontend:**
+- React 18 con React Router DOM v6
+- Vite 6
+- Tailwind CSS v4 con tema oscuro personalizado
+- Gestión de estado con useContext/useReducer
 
-> Nota: Los usuarios de Codespaces pueden conectarse a psql escribiendo: `psql -h localhost -U gitpod example`
+## Características
+
+- Catálogo de productos con búsqueda, filtros y ordenación
+- Gestión de productos exclusiva para vendedores (crear, editar, poner en oferta)
+- Carrito de compras persistente (localStorage)
+- Gestión de direcciones de envío
+- Detalles técnicos de productos (fabricante, colección, serie anime, personaje)
+- Sistema de ofertas y productos nuevos
+- Carga de imágenes a Cloudinary
+- Panel de administración Flask-Admin
+- UI responsive con tema oscuro
+
+---
+
+### 1) Instalación del Backend
+
+> Si usas Github Codespaces o Gitpod, esta plantilla ya viene con Python, Node y PostgreSQL instalados. Si trabajas localmente, asegúrate de tener Python 3.10, Node y un motor de base de datos instalado.
+
+1. Instala las dependencias de Python:
+   ```bash
+   pipenv install
+   ```
+
+2. Crea un archivo `.env` basado en `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Configura las variables de entorno en `.env`:
+
+   | Variable | Descripción |
+   |----------|-------------|
+   | `DATABASE_URL` | Cadena de conexión a tu base de datos |
+   | `JWT_SECRET_KEY` | Clave secreta para firmar tokens JWT |
+   | `FLASK_APP_KEY` | Clave para Flask-Admin |
+   | `CLOUDINARY_CLOUD_NAME` | Nombre de tu cuenta Cloudinary |
+   | `CLOUDINARY_API_KEY` | API Key de Cloudinary |
+   | `CLOUDINARY_API_SECRET` | API Secret de Cloudinary |
+   | `FLASK_APP=src/app.py` | |
+   | `FLASK_DEBUG=1` | Modo desarrollo |
+
+   Ejemplos de `DATABASE_URL`:
+
+   | Motor | DATABASE_URL |
+   |-------|--------------|
+   | SQLite | `sqlite:////test.db` |
+   | MySQL | `mysql://username:password@localhost:port/example` |
+   | Postgres | `postgres://username:password@localhost:5432/example` |
+
+4. Ejecuta las migraciones:
+   ```bash
+   pipenv run migrate
+   pipenv run upgrade
+   ```
+
+5. Inicia el servidor backend (puerto 3001):
+   ```bash
+   pipenv run start
+   ```
+
+### 2) Instalación del Frontend
+
+- Asegúrate de usar Node 20 y de que el backend esté corriendo correctamente.
+
+1. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+
+2. Inicia el servidor de desarrollo (puerto 3000):
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Crear usuario Seller desde Postman
+
+El rol **seller** no está disponible en el formulario de registro de la web. Para crear un vendedor, envía una petición **POST** desde Postman al siguiente endpoint:
+
+```
+POST http://localhost:3001/api/user/signup/seller
+```
+
+**Headers:**
+```
+Content-Type: application/json
+```
+
+**Body (raw JSON):**
+```json
+{
+  "user_name": "vendedor1",
+  "first_name": "Nombre",
+  "last_name": "Apellido",
+  "email": "vendedor@example.com",
+  "password": "tu_contraseña_segura"
+}
+```
+
+**Respuesta esperada:** El usuario será creado con rol `seller` y podrá iniciar sesión para crear y gestionar productos.
+
+---
 
 ### Deshacer una migración
 
-También puedes deshacer una migración ejecutando
-
-```sh
-$ pipenv run downgrade
+```bash
+pipenv run downgrade
 ```
 
-### **Nota importante para la base de datos y los datos dentro de ella**
+### Insertar datos de prueba
 
-Cada entorno de Github Codespace tendrá **su propia base de datos**, por lo que si estás trabajando con más personas, cada uno tendrá una base de datos diferente y diferentes registros dentro de ella. Estos datos **se perderán**, así que no pases demasiado tiempo creando registros manualmente para pruebas, en su lugar, puedes automatizar la adición de registros a tu base de datos editando el archivo `commands.py` dentro de la carpeta `/src/api`. Edita la línea 32 de la función `insert_test_data` para insertar los datos según tu modelo (usa la función `insert_test_users` anterior como ejemplo). Luego, todo lo que necesitas hacer es ejecutar `pipenv run insert-test-data`.
+Puedes automatizar la adición de registros editando `commands.py` en `./src/api` y luego ejecutar:
 
-### Instalación manual del Front-End:
+```bash
+pipenv run insert-test-data
+```
 
-- Asegúrate de estar usando la versión 20 de node y de que ya hayas instalado y ejecutado correctamente el backend.
+## Despliegue
 
-1. Instala los paquetes: `$ npm install`
-2. ¡Empieza a codificar! inicia el servidor de desarrollo de webpack `$ npm run start`
-
-## ¡Publica tu sitio web!
-
-Esta plantilla está 100% lista para desplegarse con Render.com y Heroku en cuestión de minutos. Por favor, lee la [documentación oficial al respecto](https://4geeks.com/docs/start/deploy-to-render-com).
+Esta plantilla está lista para desplegarse en Render.com. Lee la [documentación oficial](https://4geeks.com/docs/start/deploy-to-render-com) para más detalles.
