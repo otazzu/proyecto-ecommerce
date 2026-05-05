@@ -1,5 +1,3 @@
-// Import necessary components and functions from react-router-dom.
-
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -19,19 +17,16 @@ import { ModifyProduct } from "./pages/ModifyProduct";
 import { Catalog } from "./pages/Catalog";
 import { NewProducts } from "./pages/NewProducts";
 import { Offers } from "./pages/Offers";
+import { Cart } from "./pages/Cart";
+import { FAQ } from "./pages/FAQ";
+import { Shipping } from "./pages/Shipping";
+import { Terms } from "./pages/Terms";
+import { Privacy } from "./pages/Privacy";
+import { Cookies } from "./pages/Cookies";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
-
-    // Root Route: All navigation will start from here.
-    <Route path="/" element={<Layout />} errorElement={<NotFound />} >
-
-      {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
+    <Route path="/" element={<Layout />} errorElement={<NotFound />}>
       <Route index element={<Home />} />
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<Signup />} />
@@ -44,6 +39,12 @@ export const router = createBrowserRouter(
       <Route path="catalog" element={<Catalog />} />
       <Route path="newproducts" element={<NewProducts />} />
       <Route path="offers" element={<Offers />} />
+      <Route path="cart" element={<Cart />} />
+      <Route path="faq" element={<FAQ />} />
+      <Route path="shipping" element={<Shipping />} />
+      <Route path="terms" element={<Terms />} />
+      <Route path="privacy" element={<Privacy />} />
+      <Route path="cookies" element={<Cookies />} />
     </Route>
   )
 );

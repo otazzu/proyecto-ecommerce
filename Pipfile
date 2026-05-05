@@ -21,6 +21,9 @@ wtforms = "==3.1.2"
 sqlalchemy = "*"
 bcrypt = "*"
 flask = "*"
+flask-limiter = "*"
+flask-talisman = "*"
+python-magic = "*"
 
 [requires]
 python_version = "3.13"

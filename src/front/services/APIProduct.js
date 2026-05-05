@@ -1,5 +1,19 @@
 const URL = import.meta.env.VITE_BACKEND_URL;
 
+const handleApiError = (response) => {
+  if (response.status === 401) {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("user_id");
+      window.dispatchEvent(new Event("userChanged"));
+    }
+    return { success: false, isAuthError: true };
+  }
+  return null;
+};
+
 const getProducts = async () => {
   try {
     const response = await fetch(`${URL}api/product/products`);
@@ -64,6 +78,13 @@ const createProduct = async (productData) => {
       },
       body: JSON.stringify(productData),
     });
+
+    const authError = handleApiError(response);
+    if (authError) {
+      window.location.href = "/login";
+      return { success: false, error: "Sesión expirada. Por favor, inicia sesión de nuevo." };
+    }
+
     const data = await response.json();
 
     if (response.ok) {
@@ -83,6 +104,9 @@ const createProduct = async (productData) => {
 const checkProductStatus = async (productId, newStatus) => {
   try {
     const token = sessionStorage.getItem("token");
+    if (!token) {
+      return { success: false, error: "No se encontró el token de autenticación" };
+    }
     const response = await fetch(
       `${URL}api/product/selectproducttomodify/${productId}/status`,
       {
@@ -94,6 +118,13 @@ const checkProductStatus = async (productId, newStatus) => {
         body: JSON.stringify({ status: newStatus }),
       },
     );
+
+    const authError = handleApiError(response);
+    if (authError) {
+      window.location.href = "/login";
+      return { success: false, error: "Sesión expirada. Por favor, inicia sesión de nuevo." };
+    }
+
     const result = await response.json();
 
     if (!response.ok) {
@@ -122,6 +153,13 @@ const getCurrentProduct = async (id) => {
         Authorization: `Bearer ${token.trim()}`,
       },
     });
+
+    const authError = handleApiError(response);
+    if (authError) {
+      window.location.href = "/login";
+      return { success: false, error: "Sesión expirada. Por favor, inicia sesión de nuevo." };
+    }
+
     const data = await response.json();
     if (response.ok) {
       return { success: true, data };
@@ -151,6 +189,13 @@ const updateProduct = async (id, productData) => {
       },
       body: JSON.stringify(productData),
     });
+
+    const authError = handleApiError(response);
+    if (authError) {
+      window.location.href = "/login";
+      return { success: false, error: "Sesión expirada. Por favor, inicia sesión de nuevo." };
+    }
+
     const data = await response.json();
     if (response.ok) {
       return { success: true, data };

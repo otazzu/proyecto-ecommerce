@@ -1,8 +1,11 @@
+import logging
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import Blueprint, jsonify, request
 from api.database.db import db
 from api.models.Address import Address
 from api.models.User import User
+
+logger = logging.getLogger(__name__)
 
 api = Blueprint('api/address', __name__)
 
@@ -65,7 +68,8 @@ def manage_addresses():
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en manage_addresses: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 
 @api.route('/addresses/<int:address_id>', methods=['GET', 'PUT', 'DELETE'])
@@ -131,7 +135,8 @@ def manage_address(address_id):
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en manage_address: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 
 @api.route('/addresses/<int:address_id>/set-default', methods=['PUT'])
@@ -163,7 +168,8 @@ def set_default_address(address_id):
 
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en set_default_address: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
 
 
 @api.route('/addresses/default', methods=['GET'])
@@ -183,4 +189,5 @@ def get_default_address():
         return jsonify(address.serialize()), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Error en get_default_address: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
