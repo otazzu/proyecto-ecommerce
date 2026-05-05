@@ -52,7 +52,7 @@ export const Login = () => {
                 {/* Logo */}
                 <div className="sm:mx-auto sm:w-full sm:max-w-sm flex justify-center mb-6">
                     <Link to="/">
-                        <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-32 w-auto" />
+                        <img src="/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-32 w-auto" />
                     </Link>
                 </div>
 

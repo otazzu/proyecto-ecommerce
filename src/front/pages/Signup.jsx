@@ -150,7 +150,7 @@ export const Signup = () => {
                 {/* Logo */}
                 <div className="flex justify-center mb-6">
                     <Link to="/">
-                        <img src="src/front/assets/img/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-28 w-auto" />
+                        <img src="/logo-kurisu-shop.png" alt="Kurisu Shop Logo" className="h-28 w-auto" />
                     </Link>
                 </div>
 
