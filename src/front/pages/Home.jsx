@@ -48,7 +48,7 @@ export const Home = () => {
 
                 // Fetch offer products
                 try {
-                    const offerResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/products/recently-updated`);
+                    const offerResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/product/products/recently-updated`);
                     const offerData = await offerResponse.json();
                     setOfferProducts(offerData.slice(0, 4));
                 } catch (e) {

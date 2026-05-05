@@ -12,7 +12,7 @@ export const NewProducts = () => {
         const fetchNewProducts = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/products/new`);
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/product/products/new`);
                 if (!response.ok) {
                     throw new Error(`Error del servidor: ${response.status}`);
                 }
