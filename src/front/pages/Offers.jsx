@@ -13,7 +13,7 @@ export const Offers = () => {
         const fetchOffers = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/products/actives`);
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/product/products/actives`);
                 const data = await response.json();
                 const offers = data.filter(p => p.on_sale === true);
                 setOfferProducts(offers);
