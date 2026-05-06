@@ -12,6 +12,8 @@ export const Home = () => {
     const [featuredProducts, setFeaturedProducts] = useState([]);
     const [offerProducts, setOfferProducts] = useState([]);
 
+    const MAX_SERIES_TO_FETCH = 6;
+
     useEffect(() => {
         const fetchProductsByAnimeSeries = async () => {
             try {
@@ -26,10 +28,13 @@ export const Home = () => {
                 }
 
                 const series = seriesResponse.data;
+                // Seleccionar solo 6 series aleatorias para no sobrecargar la carga inicial
+                const shuffledSeries = [...series].sort(() => 0.5 - Math.random());
+                const selectedSeries = shuffledSeries.slice(0, MAX_SERIES_TO_FETCH);
                 const seriesData = {};
                 let allProducts = [];
 
-                for (const animeSeries of series) {
+                for (const animeSeries of selectedSeries) {
                     const productsResponse = await technicalDetailsService.searchByTechnicalDetails({
                         anime_series: animeSeries
                     });

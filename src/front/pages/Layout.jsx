@@ -17,7 +17,7 @@ export const Layout = () => {
     return (
         <ToastProvider>
             <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg-primary)' }}>
-                <ScrollToTop>
+                <ScrollToTop location={location}>
                     {!hideNavbarFooter && <Navbar />}
                     <Outlet />
                     {!hideNavbarFooter && <Footer />}

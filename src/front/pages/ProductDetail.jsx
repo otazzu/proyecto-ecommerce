@@ -20,6 +20,7 @@ export const ProductDetail = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('description');
     const [relatedProducts, setRelatedProducts] = useState([]);
+    const [isRelatedFromSameSeries, setIsRelatedFromSameSeries] = useState(false);
     const [relatedLoading, setRelatedLoading] = useState(false);
     const [addedFeedback, setAddedFeedback] = useState(false);
 
@@ -71,6 +72,7 @@ export const ProductDetail = () => {
                         setRelatedProducts(shuffled.slice(0, 6));
                     }
                 } catch (e) { /* ignore */ }
+                setIsRelatedFromSameSeries(false);
                 setRelatedLoading(false);
                 return;
             }
@@ -85,6 +87,7 @@ export const ProductDetail = () => {
                     const filtered = response.data.filter(p => p.id !== parseInt(id)).slice(0, 6);
                     if (filtered.length > 0) {
                         setRelatedProducts(filtered);
+                        setIsRelatedFromSameSeries(true);
                     } else {
                         // Fallback: random products
                         const allResponse = await productService.getActivesProducts();
@@ -92,6 +95,7 @@ export const ProductDetail = () => {
                             const shuffled = allResponse.filter(p => p.id !== parseInt(id)).sort(() => Math.random() - 0.5);
                             setRelatedProducts(shuffled.slice(0, 6));
                         }
+                        setIsRelatedFromSameSeries(false);
                     }
                 } else {
                     const allResponse = await productService.getActivesProducts();
@@ -99,6 +103,7 @@ export const ProductDetail = () => {
                         const shuffled = allResponse.filter(p => p.id !== parseInt(id)).sort(() => Math.random() - 0.5);
                         setRelatedProducts(shuffled.slice(0, 6));
                     }
+                    setIsRelatedFromSameSeries(false);
                 }
             } catch (e) {
                 console.error('Error fetching related products:', e);
@@ -283,6 +288,22 @@ export const ProductDetail = () => {
                                         +
                                     </button>
                                 </div>
+
+                                {/* Total price display */}
+                                <div className="flex items-center justify-between w-full mt-2 px-4 py-2 rounded-lg" style={{ backgroundColor: 'var(--bg-elevated)' }}>
+                                    <span className="text-[var(--text-muted)] text-sm font-body">Total:</span>
+                                    <span className="font-mono text-xl font-bold text-[var(--accent-primary)]">
+                                        {(product.price * quantity).toFixed(2)}€
+                                    </span>
+                                </div>
+                                {product.on_sale && product.original_price && (
+                                    <div className="text-center mt-1">
+                                        <span className="text-[var(--accent-secondary)] text-xs font-semibold">
+                                            Ahorras: {((product.original_price - product.price) * quantity).toFixed(2)}€
+                                        </span>
+                                    </div>
+                                )}
+
                                 <button
                                     onClick={handleAddToCart}
                                     disabled={addedFeedback}
@@ -384,7 +405,7 @@ export const ProductDetail = () => {
                         <div className="flex items-center gap-4 mb-6">
                             <div className="w-1 h-8 bg-gradient-to-b from-[var(--accent-primary)] to-[var(--accent-tertiary)] rounded-full"></div>
                             <h2 className="font-display text-2xl font-bold text-[var(--text-primary)]">
-                                {technicalDetails?.anime_series ? `Más de ${technicalDetails.anime_series}` : 'Productos Relacionados'}
+                                {isRelatedFromSameSeries ? `Más de ${technicalDetails.anime_series}` : 'Productos Relacionados'}
                             </h2>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
